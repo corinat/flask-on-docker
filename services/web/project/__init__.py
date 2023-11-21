@@ -1,14 +1,17 @@
 import json
 import os
-from itertools import cycle
 
-from flask import Blueprint, Flask, Response, jsonify, request, send_from_directory
+from flask import Flask, Response, jsonify, request, send_from_directory
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from project.get_data_from_postgresql import GetDataFromPostgresql
-from sqlalchemy import Column, Date, Float, Integer, String
+from project.get_data_from_postgresql import GetDataFromPostgresql, StreamingData
+from sqlalchemy import Column, Float, Integer, String
 from sqlalchemy.dialects.postgresql import BIGINT
 from werkzeug.utils import secure_filename
+
+get_data = GetDataFromPostgresql()
+streem_data = StreamingData()
+
 
 app = Flask(__name__)
 app.config.from_object("project.config.Config")
@@ -29,15 +32,9 @@ class User(db.Model):
         self.last_name = last_name
         self.address = address
 
-    # def create(self):
-    #     new_user = User(self.first_name, self.last_name, self.address)
-    #     db.session.add(new_user)
-    #     db.session.commit()
-
     @staticmethod
     def print_all_user():
-        user_data = User.query.all()
-        return user_data
+        return User.query.all()
 
 
 class Runners(db.Model):
@@ -138,39 +135,24 @@ def upload_file():
 @app.route("/live/", methods=["GET"])
 def live():
     running = True
-    possition_on_the_track = GetDataFromPostgresql.indexes
-
+    possition_on_the_track = streem_data.indexes
+    spacing_factor = 50  # Adjust the spacing factor as needed
+    get_track = get_data.get_track_from_postgresql()
     while running:
-        updated_json = GetDataFromPostgresql.get_data_from_ciucas_track()
-        new_json = next(updated_json)
-        stream_runners_from_postgres = GetDataFromPostgresql.get_runners_from_postgresql()
+        streem_ciucas_track = streem_data.streem_track_from_postgres(get_track)
+        streem_features_from_ciucas_track = next(streem_ciucas_track)
+        stream_runners_from_postgres = get_data.get_runners_from_postgresql()
         runner = json.loads(stream_runners_from_postgres)
         ciucas_runner = runner["features"]
 
         sorted_ciucas_runner = sorted(ciucas_runner, key=lambda k: k["properties"]["ranking"], reverse=True)
 
-        for i, _ in enumerate(sorted_ciucas_runner):
-            for j, _ in enumerate(possition_on_the_track):
-                # runner_position = i + j
+        sorted_ciucas_runner = [
+            streem_data.update_runner_properties(
+                runner, streem_features_from_ciucas_track, runner_index, track_index, spacing_factor
+            )
+            for runner_index, runner in enumerate(sorted_ciucas_runner)
+            for track_index, _ in enumerate(possition_on_the_track)
+        ]
 
-                # Use modulo to ensure that runner_position stays within the bounds of new_json
-                # runner_position %= len(new_json)
-                spacing_factor = 50  # Adjust the spacing factor as needed
-
-                runner_position = (spacing_factor * i + j) % len(new_json) if (i + j) >= 0 else None
-                sorted_ciucas_runner[i]["properties"].update(new_json[runner_position]["properties"])
-                sorted_ciucas_runner[i]["geometry"]["coordinates"][0] = new_json[runner_position]["properties"][
-                    "xcoord"
-                ]
-                sorted_ciucas_runner[i]["geometry"]["coordinates"][1] = new_json[runner_position]["properties"][
-                    "ycoord"
-                ]
-                sorted_ciucas_runner[i]["properties"]["distance"] = round(
-                    new_json[runner_position]["properties"]["distance"], -1
-                )
-                sorted_ciucas_runner[i]["properties"]["alt"] = new_json[runner_position]["properties"]["ele"]
-
-        updated_json_data = json.dumps(runner, indent=4, sort_keys=True)
-        dict_json = json.loads(updated_json_data)
-
-        return Response(json.dumps(dict_json), mimetype="application/json")
+        return Response(json.dumps(runner), mimetype="application/json")

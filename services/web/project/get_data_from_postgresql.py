@@ -8,88 +8,80 @@ WORKDIR = os.getenv("APP_FOLDER")
 
 
 class GetDataFromPostgresql:
-    indexes = []
+    def __init__(self):
+        self.geojson_structure = {"type": "FeatureCollection", "name": "ciucasx3", "features": []}
 
     @staticmethod
     def connect_to_postgres():
         return psycopg2.connect(
             dbname=os.getenv("POSTGRES_DB"),
             user=os.getenv("POSTGRES_USER"),
-            host="db",
+            host=os.getenv("POSTGRES_HOST"),
             password=os.getenv("POSTGRES_PASSWORD"),
-            port=5432,
+            port=os.getenv("POSTGRES_PORT"),
             connect_timeout=3,
         )
 
-    @staticmethod
-    def get_track_from_postgresql():
-        conn = GetDataFromPostgresql.connect_to_postgres()
+    def get_track_from_postgresql(self):
+        conn = self.connect_to_postgres()
         query = """SELECT * FROM ciucas_route"""
 
         # Use pandas to read SQL query results directly into a DataFrame
-        df = pd.read_sql(query, conn)
+        df = pd.read_sql_query(query, conn)
 
-        postgres_results = df.to_dict("records")
+        track = self.geojson_structure
 
-        with open(f"{WORKDIR}/project/mock_data/json_tamplate.json", "r") as f:
-            runner = json.load(f)
-            all_runners = runner["features"]
-            for elements in postgres_results:
-                all_runners.append({"type": "Feature", "properties": elements})
+        # Convert the DataFrame to a list of dictionaries and append it to the 'features' list
+        track["features"] = [{"type": "Feature", "properties": row} for row in df.to_dict("records")]
+        return json.dumps(track, indent=2, default=str, sort_keys=True)
 
-        return json.dumps(runner, indent=2, default=str, sort_keys=True)
-
-    @staticmethod
-    def get_runners_from_postgresql():
-        conn = GetDataFromPostgresql.connect_to_postgres()
+    def get_runners_from_postgresql(self):
+        conn = self.connect_to_postgres()
         query = """SELECT * FROM runners_ciucas ORDER BY ranking ASC"""
 
         # Use pandas to directly read SQL query results into a DataFrame
         df = pd.read_sql_query(query, conn)
 
-        with open(f"{WORKDIR}/project/mock_data/json_tamplate.json", "r") as f:
-            runner = json.load(f)
-            all_runners = runner["features"]
-            geometry = {"type": "Point", "coordinates": [0.0, 0.0]}
+        runner = self.geojson_structure
+        geometry = {"type": "Point", "coordinates": [0.0, 0.0]}
 
-            # Convert the DataFrame to a dictionary and append it to the 'all_runners' list
-            for _, row in df.iterrows():
-                all_runners.append({"type": "Feature", "properties": row.to_dict(), "geometry": geometry})
+        # Convert the DataFrame to a list of dictionaries and append it to the 'features' list
+        runner["features"] = [
+            {"type": "Feature", "properties": row, "geometry": geometry} for row in df.to_dict("records")
+        ]
 
-        # Use the 'to_json' method of pandas DataFrame to convert the DataFrame to a JSON string
         return json.dumps(runner, indent=2, default=str, sort_keys=True)
 
-    @staticmethod
-    def random_runners_distance():
-        stream_runners_from_postgres = GetDataFromPostgresql.get_runners_from_postgresql()
-        runner = json.loads(stream_runners_from_postgres)
-        ciucas_runner = runner["features"]
 
-        category_values = {
-            "Male(team)": 10,
-            "Female(team)": 79,
-            "Mix(team)": 41,
-            "Male(individual)": 56,
-            "Female(individual)": 69,
-        }
+class StreamingData:
+    def __init__(self):
+        self.indexes = []
 
-        for i in range(len(ciucas_runner)):
-            category = ciucas_runner[i]["properties"]["categ"]
-            if category in category_values:
-                return category_values[category]
-
-    @staticmethod
-    def get_data_from_ciucas_track():
-        # still needs to be looked into
-        running = True
-        while running:
-            stream_from_postgres = GetDataFromPostgresql.get_track_from_postgresql()
-            track = json.loads(stream_from_postgres)
+    def streem_track_from_postgres(self, track_from_postgresql):
+        while track_from_postgresql:
+            track = json.loads(track_from_postgresql)
             all_points_track = track["features"]
-            for index in range(len(all_points_track)):
-                GetDataFromPostgresql.indexes.append(index)
+            for index, _ in enumerate(all_points_track):
+                self.indexes.append(index)
                 yield all_points_track
 
-
-if __name__ == "__main__":
-    GetDataFromPostgresql.get_runners_from_postgresql()
+    def update_runner_properties(
+        self, runner, streem_features_from_ciucas_track, runner_index, track_index, spacing_factor
+    ):
+        runner_position = (
+            (spacing_factor * runner_index + track_index) % len(streem_features_from_ciucas_track)
+            if (runner_index + track_index) >= 0
+            else None
+        )
+        runner["properties"].update(streem_features_from_ciucas_track[runner_position]["properties"])
+        runner["geometry"]["coordinates"][0] = streem_features_from_ciucas_track[runner_position]["properties"][
+            "xcoord"
+        ]
+        runner["geometry"]["coordinates"][1] = streem_features_from_ciucas_track[runner_position]["properties"][
+            "ycoord"
+        ]
+        runner["properties"]["distance"] = round(
+            streem_features_from_ciucas_track[runner_position]["properties"]["distance"], -1
+        )
+        runner["properties"]["alt"] = streem_features_from_ciucas_track[runner_position]["properties"]["ele"]
+        return runner

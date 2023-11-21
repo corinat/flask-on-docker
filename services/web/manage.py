@@ -29,7 +29,7 @@ def seed_db_route():
     # Open the file and load its contents
     InsertMockDataToPostrges.insert_ciucas_data_in_postgres(
         CiucasRoute,
-        f"{WORKDIR}/project/mock_data/trim_route.json",
+        f"{WORKDIR}/project/mock_data/trim_all_route.json",
     )
     print("Finished ngesting data in table")
     db.session.commit()
@@ -39,7 +39,7 @@ def seed_db_route():
 def seed_db_runners():
     InsertMockDataToPostrges.insert_ciucas_data_in_postgres(
         Runners,
-        f"{WORKDIR}/project/mock_data/trim_runner.json",
+        f"{WORKDIR}/project/mock_data/trim_runners.json",
     )
     print("Finished ngesting data in table")
     db.session.commit()
