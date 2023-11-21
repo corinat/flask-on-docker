@@ -1,15 +1,11 @@
 import json
 
-from project import Runners, db
+from models import db
 
 
 class InsertMockDataToPostrges:
     @staticmethod
     def insert_ciucas_data_in_postgres(model, json_file):
-        # table_name = model.__tablename__
-        # print("\ntable name for JSON data:", table_name)
-        # print(f"File path: {json_file}")
-
         with open(json_file) as json_data:
             record_list = json.load(json_data)
 

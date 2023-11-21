@@ -1,4 +1,4 @@
-from . import User
+from models import User
 
 
 class UserHelper:
