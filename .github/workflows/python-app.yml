@@ -30,9 +30,6 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r services/web/requirements.txt; fi
         if [ -f requirements-dev.txt ]; then pip install -r services/web/requirements-dev.txt; fi
 
-    - name: Install code
-      run: pip install -e .
-
     - name: Lint with flake8
       run: |
         pip install flake8
