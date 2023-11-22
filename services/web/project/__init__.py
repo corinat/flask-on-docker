@@ -2,13 +2,11 @@ import json
 import os
 
 from flask import Flask, Response, jsonify, request, send_from_directory
+from project.get_data_from_postgresql import GetDataFromPostgresql, StreamingData
+from werkzeug.utils import secure_filename
 
 # from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
-from project.get_data_from_postgresql import GetDataFromPostgresql, StreamingData
-from sqlalchemy import Column, Float, Integer, String
-from sqlalchemy.dialects.postgresql import BIGINT
-from werkzeug.utils import secure_filename
+
 
 get_data = GetDataFromPostgresql()
 streem_data = StreamingData()
