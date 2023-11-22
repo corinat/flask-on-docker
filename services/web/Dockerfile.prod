@@ -16,6 +16,7 @@ ENV PYTHONUNBUFFERED 1
 RUN apt-get update && \
     apt-get install -y --no-install-recommends gcc
 
+RUN apt-get install -y  git
 # lint
 RUN pip install --upgrade pip
 RUN pip install flake8==6.0.0
@@ -24,8 +25,9 @@ COPY . /usr/src/app/
 
 # install python dependencies
 COPY ./requirements.txt .
+COPY ./requirements-dev.txt .
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt
-
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements-dev.txt
 
 #########
 # FINAL #
@@ -39,7 +41,7 @@ RUN mkdir -p /home/app
 
 # create the app user
 RUN addgroup --system app && adduser --system --group app
-
+RUN apt-get install -y  git
 # create the appropriate directories
 ENV HOME=/home/app
 ENV APP_HOME=/home/app/web
@@ -50,6 +52,7 @@ WORKDIR $APP_HOME
 RUN apt-get update && apt-get install -y --no-install-recommends netcat
 COPY --from=builder /usr/src/app/wheels /wheels
 COPY --from=builder /usr/src/app/requirements.txt .
+COPY --from=builder /usr/src/app/requirements-dev.txt .
 RUN pip install --upgrade pip
 RUN pip install --no-cache /wheels/*
 

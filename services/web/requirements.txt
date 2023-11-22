@@ -4,7 +4,6 @@ psycopg2-binary==2.9.6
 astroid
 requests
 Babel
-black
 click
 flake8
 Flask-Babel
@@ -30,7 +29,6 @@ regex
 six
 SQLAlchemy
 toml
-tomli
 typing-extensions
 Werkzeug
 wrapt
