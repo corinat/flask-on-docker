@@ -5,13 +5,11 @@ astroid
 requests
 Babel
 click
-flake8
 Flask-Babel
 Flask-Cors
 Flask-Login
 Flask-Table
 greenlet
-isort
 itsdangerous
 Jinja2
 lazy-object-proxy
