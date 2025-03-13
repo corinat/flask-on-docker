@@ -1,57 +1,42 @@
-from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
-from project import app
+from flask_login import UserMixin
+from project.app_factory import db
 from sqlalchemy import Column, Float, Integer, String
 from sqlalchemy.dialects.postgresql import BIGINT
 
-app.config.from_object("project.config.Config")
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
 
-
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = "users"
-
     id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(20))
-    last_name = db.Column(db.String(20))
-    address = db.Column(db.String(200), unique=True)
+    email = db.Column(db.String(10000), unique=True)
+    name = db.Column(db.String(100))
+    password = db.Column(db.String(255), nullable=False)  # Increase to 255
+    
 
-    def __init__(self, first_name: str, last_name: str, address: str):
-        self.first_name = first_name
-        self.last_name = last_name
-        self.address = address
+    def __init__(self, email: str, password: str, name: str):
+        self.email = email
+        self.name = name
+        self.password = password
+       
 
     @staticmethod
     def print_all_user():
         return User.query.all()
 
-
 class Runners(db.Model):
-    """"""
-
     __tablename__ = "runners_ciucas"
 
-    mytable_key = Column(
-        BIGINT,
-        nullable=False,
-        server_default="0",
-        primary_key=True,
-        unique=True,
-        autoincrement=True,
-    )
-
+    mytable_key = Column(BIGINT, nullable=False, primary_key=True, unique=True, autoincrement=True)
     id = Column(BIGINT, nullable=False, unique=True)
     imei = Column(BIGINT, unique=True, nullable=False)
     name = Column(String(128), unique=True, nullable=False)
     displayname = Column(String(128), unique=True, nullable=False)
-    gender = Column(String(128), unique=False, nullable=False)
+    gender = Column(String(128), nullable=False)
     categ = Column(String, nullable=False)
-    club = Column(String(128), unique=False, nullable=False)
+    club = Column(String(128), nullable=False)
     bib = Column(String(128), unique=True, nullable=False)
-    age = Column(String(128), unique=False, nullable=False)
-    ranking = Column(Integer, unique=False, nullable=False)
-    time_ = Column(String(128), unique=False, nullable=True)
+    age = Column(String(128), nullable=False)
+    ranking = Column(Integer, nullable=False)
+    time_ = Column(String(128), nullable=True)
 
     def __init__(self, id, imei, name, displayname, gender, categ, club, bib, time_, age, ranking):
         self.id = id
@@ -68,22 +53,13 @@ class Runners(db.Model):
 
 
 class CiucasRoute(db.Model):
-    """"""
-
     __tablename__ = "ciucas_route"
 
-    mytable_key = Column(
-        BIGINT,
-        nullable=False,
-        server_default="0",
-        primary_key=True,
-        unique=True,
-        autoincrement=True,
-    )
+    mytable_key = Column(BIGINT, nullable=False, primary_key=True, unique=True, autoincrement=True)
     distance = Column(Float(), unique=True, nullable=False)
-    ele = Column(Integer, unique=False, nullable=False)
-    xcoord = Column(Float(), unique=False, nullable=False)
-    ycoord = Column(Float(), unique=False, nullable=False)
+    ele = Column(Integer, nullable=False)
+    xcoord = Column(Float(), nullable=False)
+    ycoord = Column(Float(), nullable=False)
 
     def __init__(self, distance: float, ycoord: float, ele: float, xcoord: float):
         self.distance = distance
