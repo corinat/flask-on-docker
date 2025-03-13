@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Leaflet Realtime</title>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+    <style>
+        #map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    <!-- <script src="../dist/leaflet-realtime.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-realtime/2.2.0/leaflet-realtime.min.js"></script>
+    <script type="text/javascript" src="new_ultra_panta.geojson"></script>
+    <script>
+        var map = L.map('map').setView([45.3388268430888559, 26.004801036778811], 10),
+        realtime = L.realtime('http://localhost:5500/', {
+            //console.log(f.geometry)
+            return f.properties.name;
+        },
+        }).addTo(map);
+
+    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // realtime.once('update', function() {
+    //     map.fitBounds(realtime.getBounds(), {maxZoom: 3});
+    // });
+    realtime.on('update', function(e) {
+        var coordPart = function(v, dirs) {
+        return dirs.charAt(v >= 0 ? 0 : 1) +
+        (Math.round(Math.abs(v) * 100) / 100).toString();
+        }
+    });
+
+    var conturLineSlope = {
+    "color": 'black',
+    "weight": 2
+    };
+    var contur = L.geoJson(panta_ultra, {
+    style: conturLineSlope
+    }).addTo(map);
+
+    </script>
+</body>
+</html>
