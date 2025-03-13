@@ -1,0 +1,187 @@
+var varfuriCiucas = {
+  "type": "FeatureCollection",
+  "generator": "overpass-turbo",
+  "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.",
+  "timestamp": "2016-09-13T08:23:02Z",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "node/26862720",
+      "properties": {
+        "@id": "node/26862720",
+        "ele": "1954",
+        "name": "Ciucaș Peak",
+        "type": "maraton",
+        "name:hu": "Csukás-csúcs",
+        "natural": "peak",
+        "wikidata": "Q5124125"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          25.9264819,
+          45.5216786
+        ]
+      }
+    },{
+      "type": "Feature",
+      "id": "node/304566081",
+      "properties": {
+        "@id": "node/304566081",
+        "ele": "1472",
+        "name": "Crai's Peak",
+         "type": "ultra",
+        "natural": "peak"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          26.0399138,
+          45.4207593
+        ]
+      }
+    },{
+      "type": "Feature",
+      "id": "node/1651522606",
+      "properties": {
+        "@id": "node/1651522606",
+        "ele": "1687",
+        "name": "Bratocea din Jos Peak",
+         "type": "ultra",
+        "natural": "peak"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          25.9613747,
+          45.498588
+        ]
+      }
+    },{
+      "type": "Feature",
+      "id": "node/1651522607",
+      "properties": {
+        "@id": "node/1651522607",
+        "ele": "1883",
+        "name": "Gropșoarele Peak",
+         "type": "semi",
+        "natural": "peak"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          25.9753265,
+          45.4898492
+        ]
+      }
+    },
+   /* {
+      "type": "Feature",
+      "id": "node/1765179473",
+      "properties": {
+        "@id": "node/1765179473",
+        "ele": "1883",
+        "name": "Vârful Stânii Peak",
+         "type": "maraton",
+        "natural": "peak",
+        "source": "www.trail-running.ro"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          26.0174379,
+          45.4699225
+        ]
+      }
+    },*/
+    {
+      "type": "Feature",
+      "id": "node/2010175838",
+      "properties": {
+        "@id": "node/2010175838",
+        "ele": "1814",
+        "name": "Zăganu Peak",
+         "type": "semi",
+        "natural": "peak"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          25.9794971,
+          45.4837596
+        ]
+      }
+    },{
+      "type": "Feature",
+      "id": "node/2022638757",
+      "properties": {
+        "@id": "node/2022638757",
+        "ele": "1752",
+        "name": "Grohotiș Peak",
+         "type": "ultra",
+        "natural": "peak",
+        "source": "SRTM"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          25.8648007,
+          45.4068119
+        ]
+      }
+    },{
+      "type": "Feature",
+      "id": "node/2440864986",
+      "properties": {
+        "@id": "node/2440864986",
+        "ele": "1765",
+        "name": "Muntele Roșu Peak",
+         "type": "semi",
+        "natural": "peak"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          25.9613747,
+          45.498588
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/2441474711",
+      "properties": {
+        "@id": "node/2441474711",
+        "ele": "1883",
+        "name": "Gropșoarele Peak",
+         "type": "maraton",
+        "natural": "peak"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          25.9753265,
+          45.4898492
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/2495845551",
+      "properties": {
+        "@id": "node/2495845551",
+        "ele": "1827",
+        "name": "Bratocea Peak",
+         "type": "ultra",
+        "natural": "peak"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          25.9172222,
+          45.5133333
+        ]
+      }
+    }
+  ]
+}

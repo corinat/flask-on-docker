@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap4.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/register-runners.css" />
+<head>
+    <title>Register Participants</title>
+    <style>
+
+    </style>
+</head>
+</br><h6>
+    <b>1. Add the name of the team before registering the participants that are part of that team</b>
+</h6></br>
+<table id = 'teamNames'>
+    <tr>
+        <td>Enter team names</td>
+        <td><input type="text" id="inputtext" /></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td><button type="button" id="add" onclick="addRecord();">Save name</button>
+        </td>
+    </tr>
+</table>
+
+<div id='values'></div>
+
+
+
+<body onload="createTable()">
+
+</br></br><h6>
+<b>2. Click the "Add New Row" button to add a new row to the table. <br> Enter values in each row and press the "Submit Data" button.</b>
+</h6></br>
+    
+<p>
+<input type="button" id="addRow" value="Add New Row" onclick="addRow()" />
+</p>
+
+<div id="cont"></div>  <!-- the container to add the TABLE -->
+</br>
+<p>
+<input type="button" id="bt" value="Submit Data" onclick="submit()" />
+</p>
+    
+<p id='output'></p>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="./js/register-runners.js"></script>
+</body>
+</html>

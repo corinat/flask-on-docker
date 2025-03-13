@@ -1,0 +1,214 @@
+var alim = {
+	"type": "FeatureCollection",
+	"features": [
+		{
+			"type": "Feature",
+			"properties": {
+				"Name": '<b>Culmea Buzoianu</b></br>1156m, 4.2km</br></br><img class="tooltip" src="./img/buzoianu.jpg" alt="Culmea Buzoianu" width="82" height="142"> <br> <img src="./img/apa44.png" title="Hydratation point" height="32" width="32"> <img src="./img/control22.png" title="Time check" height="26" width="26">',
+				"LAYER": "P1, C,A, Culmea Buzaianu",
+				"controlpoint": "P1",
+				"type": "pc1"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [25.976786, 45.46272]
+			}
+		},{
+			"type": "Feature",
+			"properties": {
+				"Name": '<b>Stânii Glade</b></br>965m, 8.6/92km</br></br><b>Time limit at 92km, 20 hours.</br></br><img src="./img/revit2.png" title="Food" height="32" width="32"> <img src="./img/apa44.png" title="Hydratation point" height="32" width="32"> <img src="./img/control22.png" title="Time check" height="26" width="26"><img src="./img/rescue.png" title="First Aid" style ="color:green" height="32" width="32">',
+				"LAYER": "P2\/P16, C,A,R,S, Valea Stanii",
+				"controlpoint": "P2\/P16",
+				"type": "pc2_16"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [26.017404, 45.469511]
+			}
+		},{
+			"type": "Feature",
+			"properties": {
+				"Name": '<b>Curmătura Văii Stânii</b></br>1436m, 19km</br></br><img src="./img/apa44.png" title="Hydratation point" height="32" width="32"> <img src="./img/control22.png" title="Time check" height="26" width="26">',
+				"LAYER": "P3, C,A, Curmatura Vaii Stanii",
+				"controlpoint": "P3",
+				"type": "pc3"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [25.989214, 45.514433]
+			}
+		},{
+			"type": "Feature",
+			"properties": {
+				"Name": '<b>Cabana Ciucaș</b></br>1613m, 23.8km</br></br><img src="./img/revit2.png" title="Food" height="32" width="32"> <img src="./img/apa44.png" title="Hydratation point" height="32" width="32"> <img src="./img/control22.png" title="Time check" height="26" width="26">',
+				"LAYER": "P4 C, A, R, Cabana Ciucas",
+				"controlpoint": "P4",
+				"type": "pc4"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [25.945653, 45.511458]
+			}
+		}, {
+			"type": "Feature",
+			"properties": {
+				"Name": '<b>Ciucaș Peak</b></br>1954m, 26km</br></br><img src="./img/control22.png" title="Time check" height="26" width="26">',
+				"LAYER": "P5, C, Varful Ciucas",
+				"controlpoint": "P5",
+				"type": "pc5"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [25.927853, 45.520731]
+			}
+		}, {
+			"type": "Feature",
+			"properties": {
+				"Name":'<b>Șaua Țigăi</b></br> 1632m, 27.7/35km</br></br> <img src="./img/control22.png" title="Time check" height="26" width="26">',
+				"LAYER": "P6\/P8, C, Șaua Țigăi",
+				"controlpoint": "P6\/P8",
+				"type": "pc6_8"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [25.918825, 45.516287]
+			}
+		},{
+			"type": "Feature",
+			"properties": {
+				"Name":'<b>Poiana Teslei</b></br> 1380m, 30km</br></br><img src="./img/revit2.png" title="Food" height="32" width="32"><img src="./img/apa44.png" title="Hydratation point" height="32" width="32">',
+				"LAYER": "P7, C,A, Poiana Teslei",
+				"controlpoint": "P7",
+				"type": "pc7"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [25.89398, 45.52084]
+			}
+		},{
+			"type": "Feature",
+			"properties": {
+				"Name": '<b>Pas Bratocea</b></br>1276m, 39km</br></br><b>Time limit, 8 hours.</b></br></br><img src="./img/revit2.png" title="Food" height="32" width="32"> <img src="./img/apa44.png" title="Hydratation point" height="32" width="32"> <img src="./img/control22.png" title="Time check" height="26" width="26">',
+				"LAYER": "P9 C, A, R, Pas Bratocea",
+				"controlpoint": "P9",
+				"type": "pc9"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [25.891635, 45.486134]
+			}
+		},{
+			"type": "Feature",
+			"properties": {
+				"Name": '<b>Grohotiș Peak</b></br>1749m, 47km</br></br><img src="./img/apa44.png" title="Hydratation point" height="32" width="32"> <img src="./img/control22.png" title="Time check" height="26" width="26">',
+				"LAYER": "P10, C, A, Varful Grohotis",
+				"controlpoint": "P10",
+				"type": "pc10"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [25.865443, 45.41406]
+			}
+		},{
+			"type": "Feature",
+			"properties": {
+				"Name": '</b>Ulița Peak</b></br>1512m, 51.3km</br></br><img src="./img/apa44.png" title="Hydratation point" height="32" width="32"> <img src="./img/control22.png" title="Time check" height="26" width="26">',
+				"LAYER": "P11, C, A, Varful Ulita",
+				"controlpoint": "P11",
+				"type": "pc11"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [25.849218, 45.377194]
+			}
+		}, {
+			"type": "Feature",
+			"properties": {
+				"Name": '<b>Nebunu Sheepfold</b></br> 1369m, 55km</br></br><img src="./img/revit2.png" title="Food" style ="stroke:green" height="32" width="32">  <img src="./img/apa44.png" title="Hydratation point" height="32" width="32">  <img src="./img/control22.png" title="Time check" height="26" width="26"> <img src="./img/rescue.png" title="First Aid" style ="color:green" height="32" width="32">',
+				"LAYER": "pc12, C, A, R, S, Stana Nebunu",
+				"controlpoint": "P12",
+				"type": "pc12"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [25.870722, 45.35014]
+			}
+		}, {
+			"type": "Feature",
+			"properties": {
+				"Name": '<b>Măneciu Dam</b></br> 603m, 66.6km</br></br><b>Time limit, 14 hours.</b></br></br><img src="./img/apa44.png" title="Hydratation point" height="32" width="32"> <img src="./img/control22.png" title="Time check" height="26" width="26"><br>',
+				"LAYER": "P13, C, A, R Baraj Maneciu",
+				"controlpoint": "P13",
+				"type": "pc13"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [25.979413, 45.324043]
+			}
+		},{
+			"type": "Feature",
+			"properties": {
+				"Name": '<b>Crai&#39s Peak</b></br>1447m, 81km</br></br><img src="./img/control22.png" title="Time check" height="26" width="26"> <img src="./img/rescue.png" title="First Aid" style ="color:green" height="32" width="32">',
+				"LAYER": "P14, C, A, S, Varful lui Crai",
+				"controlpoint": "P14",
+				"type": "pc14"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [26.046075, 45.415819]
+			}
+		},{
+			"type": "Feature",
+			"properties": {
+				"Name": '<b>Sub Tabla Buții</b></br>1273m, 90km</br></br><img src="./img/control22.png" title="Time check" height="26" width="26"> <img src="./img/rescue.png" title="First Aid" style ="color:green" height="32" width="32">',
+				"LAYER": "P15, C,A,S, Sub Tabla Butii",
+				"controlpoint": "P15",
+				"type": "pc15"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [26.045661, 45.478393]
+			}
+		},{
+			"type": "Feature",
+			"properties": {
+			 	"Name": '<b>La Rascruce</b></br>1804m, 99.5km</br></br> <img src="./img/control22.png" title="Time check" height="26" width="26"> <img src="./img/rescue.png" title="First Aid" style ="color:green" height="32" width="32">',
+				"LAYER": "P17, C,S, La Rascruce",
+				"controlpoint": "P17",
+				"type": "pc17"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [25.9715795, 45.49942188]
+			}
+		},{
+			"type": "Feature",
+			"properties": {
+				"Name": '<b>Cabana Silva</b></br>1277m, 103km</br></br><img src="./img/revit2.png" title="Food" style ="stroke:green" height="32" width="32">  <img src="./img/apa44.png" title="Hydratation point" height="32" width="32">  <img src="./img/control22.png" title="Time check" height="26" width="26"> <img src="./img/rescue.png" title="First Aid" style ="color:green" height="32" width="32">',
+				"LAYER": "P18, C, A, R, S, Cabana Silva",
+				"controlpoint": "P18",
+				"type": "pc18"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [25.94285, 45.490257]
+			}
+		},{
+			"type": "Feature",
+			"properties": {
+				"Name": "883m, 108km",
+				"LAYER": "Start\/Sosire",
+				"POINT_X": "2.59377972197e+001",
+				"POINT_Y": "4.54575000605e+001",
+				"controlpoint": "Start/Finish",
+				"type": "start",
+        "Name": "883m, 108km </br> <b>Course time limit, 26 hours.</b>"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [25.937797, 45.457500]
+			}
+		}
+
+	]
+}

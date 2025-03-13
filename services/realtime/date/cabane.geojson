@@ -1,0 +1,39 @@
+var cabaneSemi = {
+	"type": "FeatureCollection",
+	"features": [{
+		"type": "Feature",
+		"properties": {
+			"name": "Muntele Rosu Chalet",
+            "alt": "1280m",
+            "type": "semi"
+		},
+		"geometry": {
+			"type": "Point",
+			"coordinates": [25.940651893615723, 45.48824177438085]
+		}
+	}, {
+		"type": "Feature",
+		"properties": {
+			"name": "Silva Hut",
+            "alt": "1301m",
+             "type": "semi"
+		},
+		"geometry": {
+			"type": "Point",
+			"coordinates": [25.944669842720028, 45.48914810914576]
+		}
+	}, {
+		"type": "Feature",
+		"properties": {
+			"name": "Ciucas Chalet",
+            "alt": "1584,5m",
+             "type": "semi"
+		},
+		"geometry": {
+			"type": "Point",
+			"coordinates": [25.94710, 45.50941]
+		}
+	}
+    
+    ]
+}

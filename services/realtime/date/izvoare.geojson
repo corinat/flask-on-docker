@@ -1,0 +1,251 @@
+var izvoare = {
+  "type": "FeatureCollection",
+  "generator": "overpass-turbo",
+  "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.",
+  "timestamp": "2016-09-13T08:25:03Z",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "node/304566052",
+      "properties": {
+        "@id": "node/304566052",
+        "created_by": "Potlatch 0.10e",
+        "ele": "1371",       
+        "natural": "spring",
+        "type": "semi",
+         "name": "Izvor",
+        "wpt_description": "150M IN VAIUGA"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          26.0514752,
+          45.4309336
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/304566107",
+      "properties": {
+        "@id": "node/304566107",
+        "ele": "1246",        
+        "type": "semi",
+         "name": "Izvor",
+        "natural": "spring"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          26.0471579,
+          45.4052081
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/979462343",
+      "properties": {
+        "@id": "node/979462343",
+        "ele": "1396.0",
+        "type": "semi",
+         "name": "Izvor",
+        "natural": "spring"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          25.9485751,
+          45.5023133
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/1651522737",
+      "properties": {
+        "@id": "node/1651522737",
+        "type": "semi",
+         "name": "Izvor",
+        "natural": "spring"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          25.9727601,
+          45.5096299
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/1651522739",
+      "properties": {
+        "@id": "node/1651522739",
+        "type": "semi",
+         "name": "Izvor",
+        "natural": "spring"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          25.8967353,
+          45.5460926
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/1651522740",
+      "properties": {
+        "@id": "node/1651522740",
+        "type": "semi",
+         "name": "Izvor",
+        "natural": "spring"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          25.9124698,
+          45.556777
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/1652674541",
+      "properties": {
+        "@id": "node/1652674541",
+        "type": "semi",
+         "name": "Izvor",
+        "natural": "spring"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          25.8251718,
+          45.4326955
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/1652674586",
+      "properties": {
+        "@id": "node/1652674586",
+        "type": "semi",
+         "name": "Izvor",
+        "natural": "spring"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          25.8174061,
+          45.4537843
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/1652674610",
+      "properties": {
+        "@id": "node/1652674610",
+        "type": "semi",
+         "name": "Izvor",
+        "natural": "spring"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          25.8880238,
+          45.4599879
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/1652674798",
+      "properties": {
+        "@id": "node/1652674798",
+        "type": "semi",
+        "name": "Izvor",
+        "natural": "spring"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          25.9809695,
+          45.5105762
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/1652675025",
+      "properties": {
+        "@id": "node/1652675025",
+        "type": "semi",
+         "name": "Izvor",
+        "natural": "spring"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          26.0022143,
+          45.5304678
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/1976875348",
+      "properties": {
+        "@id": "node/1976875348",
+        "type": "semi",
+         "name": "Izvor",
+        "natural": "spring"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          25.8685269,
+          45.4946971
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/2382266226",
+      "properties": {
+        "@id": "node/2382266226",
+        "type": "semi",
+        "name": "Izvor",
+        "natural": "spring"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          26.156116,
+          45.5844629
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "node/3600597010",
+      "properties": {
+        "@id": "node/3600597010",
+        "type": "semi",
+        "name": "Izvor",
+        "natural": "spring"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          25.9411155,
+          45.4881335
+        ]
+      }
+    }
+  ]
+}
