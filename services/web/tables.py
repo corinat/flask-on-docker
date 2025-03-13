@@ -2,7 +2,8 @@ from flask_table import Col, LinkCol, Table
 
 
 class Results(Table):
-
+    classes = ["table", "table-bordered", "table-striped", "table-hover", "table-dark"]
+    
     mytable_key = Col('mytable_key', show=False)
     id = Col('id', show=False)
     imei = Col('IMEI')
