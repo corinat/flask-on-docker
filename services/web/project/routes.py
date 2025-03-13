@@ -85,65 +85,29 @@ def random_index():
 @cross_origin()
 @main.route("/results", methods=["GET", "POST"])
 @login_required
-def search_results(search):
+def search_results(search_string=None):
     from models import Runners
-    results = []
-    search_string = search.data["search"]
+    search_string = request.form.get("search", "").strip()
+    select_category = request.form.get("select", "")
+
+    results_query = db_session.query(Runners)
 
     if search_string:
-        if search.data["select"] == "Female(individual)":
-            qry = (
-                db_session.query(Runners)
-                .filter(Runners.categ == "Female(individual)")
-                .filter(Runners.name.contains(search_string))
-            )
-            results = [item for item in qry.all()]
-        elif search.data["select"] == "Mix(team)":
-            # qry = db_session.query(Runners).filter(
-            #     Runners.name.contains(search_string))
-            # results = qry.all()
-            qry = (
-                db_session.query(Runners)
-                .filter(Runners.categ == "Mix(team)")
-                .filter(Runners.name.contains(search_string))
-            )
-            results = [item for item in qry.all()]
-        elif search.data["select"] in "Female(team)":
-            qry = (
-                db_session.query(Runners)
-                .filter(Runners.categ == "Female(team)")
-                .filter(Runners.name.contains(search_string))
-            )
-            results = [item for item in qry.all()]
-        elif search.data["select"] in "Male(team)":
-            qry = (
-                db_session.query(Runners)
-                .filter(Runners.categ == "Male(team)")
-                .filter(Runners.name.contains(search_string))
-            )
-            results = [item for item in qry.all()]
-        elif search.data["select"] in "Male(individual)":
-            qry = (
-                db_session.query(Runners)
-                .filter(Runners.categ == "Male(individual)")
-                .filter(Runners.name.contains(search_string))
-            )
-            results = [item for item in qry.all()]
-        else:
-            qry = db_session.query(Runners)
-            results = qry.all()
-    else:
-        qry = db_session.query(Runners)
-        results = qry.all()
+        results_query = results_query.filter(Runners.name.contains(search_string))
+    
+    if select_category in ["Female(individual)", "Mix(team)", "Female(team)", "Male(team)", "Male(individual)"]:
+        results_query = results_query.filter(Runners.categ == select_category)
+
+    results = results_query.all()
 
     if not results:
         flash("No results found!")
-        return redirect("/register_runners")
-    else:
-        # display results
-        table = Results(results)
-        table.border = True
-        return render_template("/results.html", table=table)
+        return redirect(url_for("main.register_runners"))
+
+    # convert query results to a Flask-Table
+    table = Results(results)
+
+    return render_template("results.html", table=table)
 
 
 @main.route("/new_runner", methods=["GET", "POST"])
@@ -197,10 +161,9 @@ def save_changes(runners, form, new=False):
     runners.age = form.age.data
     runners.ranking = form.ranking.data
     runners.time_ = form.time_.data
-    # runners.alt = form.altrunners.name.data
 
     if new:
-        # Add the new album to the database
+        # add the new album to the database
         db_session.add(runners)
     else:
         print("error")
@@ -222,7 +185,6 @@ def edit(id):
             # save edits
             save_changes(a_runner, form)
             flash("Runner updated successfully!")
-            # return redirect("/register_runners")
             return redirect(url_for('main.register_runners', _external=True))
         return render_template("edit_runner.html", form=form)
         
@@ -250,7 +212,7 @@ def delete(id):
             db_session.commit()
 
             flash("Runner deleted successfully!")
-            return redirect("/register_runners")
+            return redirect(url_for("main.register_runners"))
         return render_template("delete_runner.html", form=form)
     else:
         return "Error deleting #{id}".format(id=id)
