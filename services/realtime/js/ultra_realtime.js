@@ -290,9 +290,8 @@ $('#info').on('click', function (e) {
 
 sidebar.disablePanel('info')
 
-// url_all = 'http://localhost:1337/live'
-url_all = 'http://live.mapwizard.eu/live'
-// http://localhost:1337/live
+url_all = 'http://nginx:1337/live'
+// url_all = 'http://live.mapwizard.eu/live'
 // url_all = 'http://api.mapwizard.eu:1337/live'
 
 var markersFemaleInd = {};

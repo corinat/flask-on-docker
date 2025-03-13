@@ -1,9 +1,20 @@
 
 import json
 import os
+import time
 
 from db_setup import db_session
-from flask import Blueprint, Response, flash, redirect, render_template, request, send_from_directory, url_for
+from flask import (
+    Blueprint,
+    Response,
+    flash,
+    redirect,
+    render_template,
+    request,
+    send_from_directory,
+    stream_with_context,
+    url_for,
+)
 from flask_cors import cross_origin
 from flask_login import current_user, login_required
 from forms import RunnerForm, RunnerSearchForm
@@ -35,13 +46,13 @@ def index():
 
 
 @main.route("/profile")
-@login_required
+# @login_required
 def profile():
     return render_template("profile.html", name=current_user.name)
 
 
 @main.route("/register_runners", methods=["GET", "POST"])
-@login_required
+# @login_required
 def register_runners():
     search = RunnerSearchForm(request.form)
     if request.method == "POST":
@@ -85,7 +96,7 @@ def random_index():
 
 @cross_origin()
 @main.route("/results", methods=["GET", "POST"])
-@login_required
+# @login_required
 def search_results(search_string=None):
     from models import Runners
     search_string = request.form.get("search", "").strip()
@@ -112,7 +123,7 @@ def search_results(search_string=None):
 
 
 @main.route("/new_runner", methods=["GET", "POST"])
-@login_required
+# @login_required
 def new_runner():
     """
     Add a new runner
@@ -146,7 +157,7 @@ def new_runner():
     return render_template("new_runner.html", form=form)
 
 
-@login_required
+# @login_required
 def save_changes(runners, form, new=False):
     """
     Save the changes to the database
@@ -173,7 +184,7 @@ def save_changes(runners, form, new=False):
 
 
 @main.route("/edit/<int:id>", methods=["GET", "POST"])
-@login_required
+# @login_required
 def edit(id):
     from models import Runners
     qry = db_session.query(Runners).filter(Runners.id == id)
@@ -194,7 +205,7 @@ def edit(id):
 
 
 @main.route("/delete/<int:id>", methods=["GET", "POST"])
-@login_required
+# @login_required
 def delete(id):
     from models import Runners
     """
@@ -245,6 +256,44 @@ def live():
         return Response(json.dumps(runner), mimetype="application/json")
 
 
-@main.route('/realtime/<path:filename>')
-def serve_realtime_files(filename):
-    return send_from_directory(os.path.join(os.getcwd(), 'realtime'), filename)
+# @main.route("/live", strict_slashes=False, methods=["GET"])
+# def live():
+#     print("Received request for /live")
+#     def generate():
+#         running = True
+#         possition_on_the_track = streem_data.indexes
+#         spacing_factor = 50  # Adjust the spacing factor as needed
+#         get_track = get_data.get_track_from_postgresql()
+
+#         while running:
+#             streem_ciucas_track = streem_data.streem_track_from_postgres(get_track)
+#             streem_features_from_ciucas_track = next(streem_ciucas_track)
+#             stream_runners_from_postgres = get_data.get_runners_from_postgresql()
+#             runner = json.loads(stream_runners_from_postgres)
+#             ciucas_runner = runner["features"]
+
+#             sorted_ciucas_runner = sorted(ciucas_runner, key=lambda k: k["properties"]["ranking"], reverse=True)
+
+#             sorted_ciucas_runner = [
+#                 streem_data.update_runner_properties(
+#                     runner, streem_features_from_ciucas_track, runner_index, track_index, spacing_factor
+#                 )
+#                 for runner_index, runner in enumerate(sorted_ciucas_runner)
+#                 for track_index, _ in enumerate(possition_on_the_track)
+#             ]
+            
+#             # Yield the data for streaming
+#             yield json.dumps(sorted_ciucas_runner) + "\n"
+            
+#             # Sleep for a short duration before continuing to give time for client-side processing
+#             time.sleep(1)  # Adjust sleep time as necessary to control streaming speed
+
+#             # Reset the data stream from the beginning once the data is exhausted
+#             get_track = get_data.get_track_from_postgresql()  # Reset the data source
+
+#     # Use stream_with_context to enable Flask to stream the response
+#     return Response(stream_with_context(generate()), mimetype="application/json")
+
+# @main.route('/realtime/<path:filename>')
+# def serve_realtime_files(filename):
+#     return send_from_directory(os.path.join(os.getcwd(), 'realtime'), filename)
