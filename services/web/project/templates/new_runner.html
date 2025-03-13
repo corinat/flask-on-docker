@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<title>New Runner</title>
+<h1 class="title">New Runner</h1>
+<br>
+
+{% from "_formhelpers.html" import render_field %}
+<form method=post>
+    <dl>
+        {{ render_field(form.id) }}
+        {{ render_field(form.imei) }}
+        {{ render_field(form.displayname) }}
+        {{ render_field(form.name) }}
+        {{ render_field(form.gender) }}
+        {{ render_field(form.categ) }}
+        {{ render_field(form.club) }}
+        {{ render_field(form.bib) }}
+        {{ render_field(form.age) }}
+        {{ render_field(form.ranking) }}
+        {{ render_field(form.time_) }}
+
+    </dl>
+    <p><input type=submit value=Submit>
+</form>
+{% endblock %}
