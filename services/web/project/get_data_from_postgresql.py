@@ -14,11 +14,11 @@ class GetDataFromPostgresql:
     @staticmethod
     def connect_to_postgres():
         return psycopg2.connect(
-            dbname=os.getenv("POSTGRES_DB"),
-            user=os.getenv("POSTGRES_USER"),
-            host=os.getenv("POSTGRES_HOST"),
-            password=os.getenv("POSTGRES_PASSWORD"),
-            port=os.getenv("POSTGRES_PORT"),
+            dbname=os.getenv("POSTGRES_DB", "hello_flask_prod"),
+            user=os.getenv("POSTGRES_USER", "hello_flask"),
+            password=os.getenv("POSTGRES_PASSWORD", "hello_flask"),
+            host=os.getenv("POSTGRES_HOST", "db"),  # Change from localhost to the container name
+            port=os.getenv("POSTGRES_PORT", "5432"),
             connect_timeout=3,
         )
 

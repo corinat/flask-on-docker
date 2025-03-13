@@ -167,6 +167,6 @@ pg_hba.conf
 *.pyc
 __pycache
 .DS_Store
-.env.dev
-.env.prod
-.env.prod.db
+# .env.dev
+# .env.prod
+# .env.prod.db

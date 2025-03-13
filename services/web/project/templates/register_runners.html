@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+
+<head>
+  <title>Registration form</title>
+</head>
+
+<h1 class="title">CiucasX3 Registration form</h1>
+<br>
+<p>
+  <a href="{{ url_for('.new_runner') }}">
+    <p><input type=submit value='Add new runner'>
+  </a>
+
+<form method=post>
+  <br>
+  <p><input type=submit value='Show all registered runners'>
+</form>
+
+
+
+{% from "_formhelpers.html" import render_field %}
+<form method=post>
+  <dl>
+    <br>
+    {{ render_field(form.select) }}
+    <p>
+
+      {{ render_field(form.search) }}
+  </dl>
+  <p><input type=submit value=Search>
+</form>
+
+{% with messages = get_flashed_messages() %}
+
+
+
+{% if messages %}
+<ul class=flashes>
+  {% for message in messages %}
+  <li>{{ message }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+
+{% endblock %}

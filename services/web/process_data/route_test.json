@@ -1,0 +1,60 @@
+{
+    "type": "FeatureCollection",
+    "name": "test2_ciucas_gpx",
+    "crs": {
+        "type": "name",
+        "properties": {
+            "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+        }
+    },
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "ele": 883.0,
+                "xcoord": 25.9379575,
+                "ycoord": 45.4580724,
+                "distance": 0
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    25.9379575,
+                    45.4580724
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "ele": 885.2,
+                "xcoord": 25.9379029,
+                "ycoord": 45.4575889,
+                "distance": 53.931
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    25.9379029,
+                    45.4575889
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "ele": 882.0,
+                "xcoord": 25.938272,
+                "ycoord": 45.4579521,
+                "distance": 106102.62999999964
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    25.938272,
+                    45.4579521
+                ]
+            }
+        }
+    ]
+}
