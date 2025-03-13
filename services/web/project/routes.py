@@ -1,5 +1,6 @@
 
 import json
+import os
 
 from db_setup import db_session
 from flask import Blueprint, Response, flash, redirect, render_template, request, send_from_directory, url_for
@@ -217,8 +218,7 @@ def delete(id):
     else:
         return "Error deleting #{id}".format(id=id)
     
-@main.route("/live", methods=["GET"])
-@login_required
+@main.route("/live", strict_slashes=False, methods=["GET"])
 def live():
     running = True
     possition_on_the_track = streem_data.indexes
@@ -243,3 +243,8 @@ def live():
         ]
 
         return Response(json.dumps(runner), mimetype="application/json")
+
+
+@main.route('/realtime/<path:filename>')
+def serve_realtime_files(filename):
+    return send_from_directory(os.path.join(os.getcwd(), 'realtime'), filename)
