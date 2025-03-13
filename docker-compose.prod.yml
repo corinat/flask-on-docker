@@ -1,3 +1,71 @@
+# services:
+#   web:
+#     build:
+#       context: ./services/web
+#       dockerfile: Dockerfile.prod
+#     command: gunicorn --bind 0.0.0.0:5000 manage:app
+#     volumes:
+#       - static_volume:/home/app/web/project/static
+#       - media_volume:/home/app/web/project/media
+#       - template_volume:/home/app/web/project/templates
+#       - realtime_volume:/home/app/web/project/realtime
+#     expose:
+#       - 5000
+#     env_file:
+#       - ./.env.prod
+#       - ./.env.prod.db
+#     depends_on:
+#       - db
+#   db:
+#     image: postgres:13
+#     volumes:
+#       - postgres_data_prod:/var/lib/postgresql/data/
+#     env_file:
+#       - ./.env.prod.db
+#   pgadmin:
+#     image: dpage/pgadmin4
+#     depends_on:
+#       - db
+#     ports:
+#       - "5555:80"
+#     environment:
+#       PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+#       PGADMIN_DEFAULT_PASSWORD: admin
+#     restart: unless-stopped
+#     links:
+#       - "db:pgsql-server"
+#   realtime:
+#     # Renamed service
+#     build:
+#       context: ./services/realtime # Updated context path
+#       dockerfile: Dockerfile
+#     expose:
+#       - 5001
+#     depends_on:
+#       - web
+
+#   nginx:
+#     build: ./services/nginx
+#     volumes:
+#       - static_volume:/home/app/web/project/static
+#       - media_volume:/home/app/web/project/media
+#       - template_volume:/home/app/web/project/templates
+#       - realtime_volume:/home/app/web/project/realtime
+#     ports:
+#       - 1337:80
+#     depends_on:
+#       - web
+
+# networks:
+#   postgres:
+#     driver: bridge
+
+# volumes:
+#   postgres_data_prod:
+#   static_volume:
+#   media_volume:
+#   template_volume:
+#   realtime_volume:
 services:
   web:
     build:
@@ -8,7 +76,6 @@ services:
       - static_volume:/home/app/web/project/static
       - media_volume:/home/app/web/project/media
       - template_volume:/home/app/web/project/templates
-      - realtime_volume:/home/app/web/project/realtime
     expose:
       - 5000
     env_file:
@@ -16,12 +83,14 @@ services:
       - ./.env.prod.db
     depends_on:
       - db
+
   db:
     image: postgres:13
     volumes:
       - postgres_data_prod:/var/lib/postgresql/data/
     env_file:
       - ./.env.prod.db
+
   pgadmin:
     image: dpage/pgadmin4
     depends_on:
@@ -34,17 +103,27 @@ services:
     restart: unless-stopped
     links:
       - "db:pgsql-server"
+
+  realtime:
+    build:
+      context: ./services/realtime
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001" # Expose Realtime service
+    depends_on:
+      - web
   nginx:
     build: ./services/nginx
     volumes:
       - static_volume:/home/app/web/project/static
       - media_volume:/home/app/web/project/media
       - template_volume:/home/app/web/project/templates
-      - realtime_volume:/home/app/web/project/realtime
+      - ./services/realtime:/home/app/realtime:ro # Mounting realtime folder
     ports:
-      - 1337:80
+      - "1337:80"
     depends_on:
       - web
+      - realtime
 
 networks:
   postgres:
@@ -55,4 +134,3 @@ volumes:
   static_volume:
   media_volume:
   template_volume:
-  realtime_volume:
