@@ -42,29 +42,16 @@ services:
     networks:
       - flask-network
 
-  realtime:
-    build:
-      context: ./services/realtime
-      dockerfile: Dockerfile
-    ports:
-      - "5001:5001" # Expose Realtime service
-    depends_on:
-      - web
-    networks:
-      - flask-network
-
   nginx:
     build: ./services/nginx
     volumes:
       - static_volume:/home/app/web/project/static
       - media_volume:/home/app/web/project/media
       - template_volume:/home/app/web/project/templates
-      - ./services/realtime:/home/app/realtime:ro # Mounting realtime folder
     ports:
       - "1337:80" # Exposing Nginx on port 1337
     depends_on:
       - web
-      - realtime
     networks:
       - flask-network
     # Nginx configuration file to be used
@@ -79,5 +66,3 @@ volumes:
   static_volume:
   media_volume:
   template_volume:
-
-
