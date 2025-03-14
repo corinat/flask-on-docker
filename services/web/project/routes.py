@@ -22,6 +22,7 @@ from project.app_factory import create_app
 from project.get_data_from_postgresql import GetDataFromPostgresql, StreamingData
 from tables import Results
 from werkzeug.utils import secure_filename
+from flask_cors import CORS, cross_origin
 
 app = create_app
 # Initialize PostgreSQL data handlers
@@ -34,7 +35,6 @@ main = Blueprint("main", __name__)
 indexes = []
 runner_index = []
 
-
 @main.route("/", methods=["GET", "POST"])
 def index():
     # return render_template('index.html')
@@ -44,12 +44,10 @@ def index():
 
     return render_template("index.html", form=search)
 
-
 @main.route("/profile")
 # @login_required
 def profile():
     return render_template("profile.html", name=current_user.name)
-
 
 @main.route("/register_runners", methods=["GET", "POST"])
 # @login_required
@@ -93,8 +91,6 @@ def random_index():
         elif ciucas_runner[i]["properties"]["categ"] == "Female(individual)":
             return 69
 
-
-@cross_origin()
 @main.route("/results", methods=["GET", "POST"])
 # @login_required
 def search_results(search_string=None):
@@ -114,13 +110,12 @@ def search_results(search_string=None):
 
     if not results:
         flash("No results found!")
-        return redirect(url_for("main.register_runners"))
+        return redirect(url_for("main.register_runners", _external=True))
 
     # convert query results to a Flask-Table
     table = Results(results)
 
     return render_template("results.html", table=table)
-
 
 @main.route("/new_runner", methods=["GET", "POST"])
 # @login_required
@@ -157,7 +152,6 @@ def new_runner():
     return render_template("new_runner.html", form=form)
 
 
-# @login_required
 def save_changes(runners, form, new=False):
     """
     Save the changes to the database
@@ -182,9 +176,7 @@ def save_changes(runners, form, new=False):
     # commit the data to the database
     db_session.commit()
 
-
 @main.route("/edit/<int:id>", methods=["GET", "POST"])
-# @login_required
 def edit(id):
     from models import Runners
     qry = db_session.query(Runners).filter(Runners.id == id)
@@ -203,9 +195,7 @@ def edit(id):
     else:
         return "Error loading #{id}".format(id=id)
 
-
 @main.route("/delete/<int:id>", methods=["GET", "POST"])
-# @login_required
 def delete(id):
     from models import Runners
     """
@@ -224,12 +214,13 @@ def delete(id):
             db_session.commit()
 
             flash("Runner deleted successfully!")
-            return redirect(url_for("main.register_runners"))
+            return redirect(url_for("main.register_runners", _external=True))
         return render_template("delete_runner.html", form=form)
     else:
         return "Error deleting #{id}".format(id=id)
-    
+
 @main.route("/live", strict_slashes=False, methods=["GET"])
+@cross_origin(origins=["https://mapwizard.eu", "https://www.mapwizard.eu"])
 def live():
     running = True
     possition_on_the_track = streem_data.indexes

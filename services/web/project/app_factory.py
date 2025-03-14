@@ -2,6 +2,7 @@ from flask import Flask
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 
 # initialize extensions
 db = SQLAlchemy()
@@ -19,6 +20,11 @@ def create_app():
     migrate.init_app(app, db)
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'  # redirects to login if user is not authenticated
+   
+    # Enable CORS for the entire app
+    CORS(app, origins=["https://mapwizard.eu", "https://www.mapwizard.eu"],
+      methods=["GET", "POST", "OPTIONS", "PUT", "DELETE"],
+      allow_headers=["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"])
 
     # import models after db is initialized to avoid circular imports
     from models import CiucasRoute, Runners, User  
@@ -34,5 +40,5 @@ def create_app():
 
     from project.routes import main  
     app.register_blueprint(main)
-
+    
     return app

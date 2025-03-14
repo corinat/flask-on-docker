@@ -5,8 +5,9 @@ APP_FOLDER = os.getenv("APP_FOLDER", basedir)  # default to current directory
 
 class Config(object):
     # PREFERRED_URL_SCHEME = "https" if os.getenv("FLASK_HTTPS") else "http"
-    # SERVER_NAME = os.getenv("SERVER_NAME", None)  # none means no default
-    SERVER_NAME = os.getenv("SERVER_NAME", "localhost:1337") 
+    SERVER_NAME = os.getenv("SERVER_NAME", "mapwizard.eu:1443")  # Include the port
+
+    PREFERRED_URL_SCHEME = "https"
     DATABASE_URL = os.getenv("DATABASE_URL", None)
     SECRET_KEY = os.getenv("SECRET_KEY", "default-secret-key")
 
