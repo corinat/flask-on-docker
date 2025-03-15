@@ -38,7 +38,6 @@ runner_index = []
 @main.route("/", methods=["GET", "POST"])
 @login_required
 def index():
-    # return render_template('index.html')
     search = RunnerSearchForm(request.form)
     if request.method == "POST":
         return search_results(search)
@@ -58,38 +57,6 @@ def register_runners():
 
     return render_template("register_runners.html", form=search)
 
-
-def get_data_from_ciucas_track():
-    running = True
-    while running:
-        stream_from_postgres = get_data.get_track_from_postgresql()
-        track = json.loads(stream_from_postgres)
-        all_points_track = track["features"]
-        len_values = len(all_points_track)
-        for index in range((len_values) - 1)[-100::]:
-            indexes.append(index)
-            yield all_points_track
-
-
-def sort_function(value):
-    return value["properties"]["ranking"]
-
-
-def random_index():
-    stream_runners_from_postgres = get_data.get_runners_from_postgresql()
-    runner = json.loads(stream_runners_from_postgres)
-    ciucas_runner = runner["features"]
-    for i in range(len(ciucas_runner)):
-        if ciucas_runner[i]["properties"]["categ"] == "Male(team)":
-            return 10
-        elif ciucas_runner[i]["properties"]["categ"] == "Female(team)":
-            return 79
-        elif ciucas_runner[i]["properties"]["categ"] == "Mix(team)":
-            return 41
-        elif ciucas_runner[i]["properties"]["categ"] == "Male(individual)":
-            return 56
-        elif ciucas_runner[i]["properties"]["categ"] == "Female(individual)":
-            return 69
 
 @main.route("/results", methods=["GET", "POST"])
 @login_required
@@ -142,7 +109,7 @@ def new_runner():
             ranking=form.ranking.data,
             time_=form.time_.data if form.time_.data else None  # Optional field
         )
-        # print(new_runner)
+
         save_changes(new_runners, form, new=True)
         flash("New runner created successfully!")
         return redirect("/register_runners")
@@ -248,46 +215,3 @@ def live():
         ]
 
         return Response(json.dumps(runner), mimetype="application/json")
-
-
-# @main.route("/live", strict_slashes=False, methods=["GET"])
-# def live():
-#     print("Received request for /live")
-#     def generate():
-#         running = True
-#         possition_on_the_track = streem_data.indexes
-#         spacing_factor = 50  # Adjust the spacing factor as needed
-#         get_track = get_data.get_track_from_postgresql()
-
-#         while running:
-#             streem_ciucas_track = streem_data.streem_track_from_postgres(get_track)
-#             streem_features_from_ciucas_track = next(streem_ciucas_track)
-#             stream_runners_from_postgres = get_data.get_runners_from_postgresql()
-#             runner = json.loads(stream_runners_from_postgres)
-#             ciucas_runner = runner["features"]
-
-#             sorted_ciucas_runner = sorted(ciucas_runner, key=lambda k: k["properties"]["ranking"], reverse=True)
-
-#             sorted_ciucas_runner = [
-#                 streem_data.update_runner_properties(
-#                     runner, streem_features_from_ciucas_track, runner_index, track_index, spacing_factor
-#                 )
-#                 for runner_index, runner in enumerate(sorted_ciucas_runner)
-#                 for track_index, _ in enumerate(possition_on_the_track)
-#             ]
-            
-#             # Yield the data for streaming
-#             yield json.dumps(sorted_ciucas_runner) + "\n"
-            
-#             # Sleep for a short duration before continuing to give time for client-side processing
-#             time.sleep(1)  # Adjust sleep time as necessary to control streaming speed
-
-#             # Reset the data stream from the beginning once the data is exhausted
-#             get_track = get_data.get_track_from_postgresql()  # Reset the data source
-
-#     # Use stream_with_context to enable Flask to stream the response
-#     return Response(stream_with_context(generate()), mimetype="application/json")
-
-# @main.route('/realtime/<path:filename>')
-# def serve_realtime_files(filename):
-#     return send_from_directory(os.path.join(os.getcwd(), 'realtime'), filename)
