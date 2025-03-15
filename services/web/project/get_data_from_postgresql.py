@@ -4,8 +4,8 @@ import os
 import pandas as pd
 import psycopg2
 
-WORKDIR = os.getenv("APP_FOLDER")
 
+WORKDIR = os.getenv("APP_FOLDER")
 
 class GetDataFromPostgresql:
     def __init__(self):
@@ -14,11 +14,11 @@ class GetDataFromPostgresql:
     @staticmethod
     def connect_to_postgres():
         return psycopg2.connect(
-            dbname=os.getenv("POSTGRES_DB", "hello_flask_prod"),
-            user=os.getenv("POSTGRES_USER", "hello_flask"),
-            password=os.getenv("POSTGRES_PASSWORD", "hello_flask"),
-            host=os.getenv("POSTGRES_HOST", "db"),  # Change from localhost to the container name
-            port=os.getenv("POSTGRES_PORT", "5432"),
+            dbname=os.getenv("POSTGRES_DB"),
+            user=os.getenv("POSTGRES_USER"),
+            password=os.getenv("POSTGRES_PASSWORD"),
+            host=os.getenv("POSTGRES_HOST"), 
+            port=os.getenv("POSTGRES_PORT"),
             connect_timeout=3,
         )
 
@@ -56,6 +56,7 @@ class GetDataFromPostgresql:
 class StreamingData:
     def __init__(self):
         self.indexes = []
+        
 
     def streem_track_from_postgres(self, track_from_postgresql):
         while track_from_postgresql:
@@ -64,6 +65,7 @@ class StreamingData:
             for index, _ in enumerate(all_points_track):
                 self.indexes.append(index)
                 yield all_points_track
+                
 
     def update_runner_properties(
         self, runner, streem_features_from_ciucas_track, runner_index, track_index, spacing_factor

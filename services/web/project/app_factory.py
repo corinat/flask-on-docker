@@ -8,7 +8,7 @@ import os
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
-server_name = os.getenv("SERVER_NAME", "mapwizard.eu")  # Include the port
+server_name = os.getenv("SERVER_NAME")  # Include the port
 def create_app():
     app = Flask(__name__)
     app.config['PREFERRED_URL_SCHEME'] = 'https'
