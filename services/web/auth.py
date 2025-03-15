@@ -23,7 +23,7 @@ def login_post():
     # check if user exists and if the password is correct
     if not user or not check_password_hash(user.password, password):
         flash("Please check your login details and try again.")
-        return redirect(url_for("auth.login", _external=True))
+        return redirect(url_for("auth.login",_external=True))
 
     # log in the user
     login_user(user, remember=remember)

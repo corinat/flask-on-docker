@@ -17,6 +17,10 @@ services:
       - db
     networks:
       - flask-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000"]
+      interval: 30s
+      retries: 3    
 
   db:
     image: postgres:13

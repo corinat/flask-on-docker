@@ -3,15 +3,17 @@ from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-
+import os
 # initialize extensions
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
-
+server_name = os.getenv("SERVER_NAME", "mapwizard.eu")  # Include the port
 def create_app():
     app = Flask(__name__)
-
+    app.config['PREFERRED_URL_SCHEME'] = 'https'
+    app.config['SERVER_NAME'] = server_name
+    app.config['APPLICATION_ROOT'] = '/'
     # load configuration
     app.config.from_object('project.config.Config')  # correct
 

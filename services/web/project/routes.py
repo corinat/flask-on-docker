@@ -36,6 +36,7 @@ indexes = []
 runner_index = []
 
 @main.route("/", methods=["GET", "POST"])
+@login_required
 def index():
     # return render_template('index.html')
     search = RunnerSearchForm(request.form)
@@ -45,12 +46,11 @@ def index():
     return render_template("index.html", form=search)
 
 @main.route("/profile")
-# @login_required
+@login_required
 def profile():
     return render_template("profile.html", name=current_user.name)
 
 @main.route("/register_runners", methods=["GET", "POST"])
-# @login_required
 def register_runners():
     search = RunnerSearchForm(request.form)
     if request.method == "POST":
@@ -92,7 +92,7 @@ def random_index():
             return 69
 
 @main.route("/results", methods=["GET", "POST"])
-# @login_required
+@login_required
 def search_results(search_string=None):
     from models import Runners
     search_string = request.form.get("search", "").strip()
@@ -118,7 +118,7 @@ def search_results(search_string=None):
     return render_template("results.html", table=table)
 
 @main.route("/new_runner", methods=["GET", "POST"])
-# @login_required
+@login_required
 def new_runner():
     """
     Add a new runner
@@ -177,6 +177,7 @@ def save_changes(runners, form, new=False):
     db_session.commit()
 
 @main.route("/edit/<int:id>", methods=["GET", "POST"])
+@login_required
 def edit(id):
     from models import Runners
     qry = db_session.query(Runners).filter(Runners.id == id)
@@ -196,6 +197,7 @@ def edit(id):
         return "Error loading #{id}".format(id=id)
 
 @main.route("/delete/<int:id>", methods=["GET", "POST"])
+@login_required
 def delete(id):
     from models import Runners
     """
@@ -221,6 +223,7 @@ def delete(id):
 
 @main.route("/live", strict_slashes=False, methods=["GET"])
 @cross_origin(origins=["https://mapwizard.eu", "https://www.mapwizard.eu"])
+# @login_required
 def live():
     running = True
     possition_on_the_track = streem_data.indexes
