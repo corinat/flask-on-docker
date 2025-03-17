@@ -1,7 +1,7 @@
-from db_setup import db_session
+from project.db_setup import db_session
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import login_required, login_user, logout_user
-from models import User
+from project.models import User
 from werkzeug.security import check_password_hash, generate_password_hash
 
 auth = Blueprint("auth", __name__)
@@ -23,11 +23,11 @@ def login_post():
     # check if user exists and if the password is correct
     if not user or not check_password_hash(user.password, password):
         flash("Please check your login details and try again.")
-        return redirect(url_for("auth.login",_external=True))
+        return redirect(url_for("auth.login",_external=True, _scheme='https'))
 
     # log in the user
     login_user(user, remember=remember)
-    return redirect(url_for("main.profile", _external=True))
+    return redirect(url_for("main.profile", _external=True, _scheme='https'))
 
 
 @auth.route("/signup")
@@ -45,7 +45,7 @@ def signup_post():
 
     if user:
         flash("Email address already exists")
-        return redirect(url_for("auth.signup", _external=True))
+        return redirect(url_for("auth.signup", _external=True, _scheme='https'))
 
     # create a new user with the form data
     new_user = User(
@@ -58,11 +58,11 @@ def signup_post():
     db_session.add(new_user)
     db_session.commit()
 
-    return redirect(url_for("auth.login", _external=True))
+    return redirect(url_for("auth.login", _external=True, _scheme='https'))
 
 
 @auth.route("/logout")
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for("main.index", _external=True))
+    return redirect(url_for("main.index", _external=True, _scheme='https'))
