@@ -3,7 +3,7 @@ import json
 import os
 import time
 
-from db_setup import db_session
+from project.db_setup import db_session
 from flask import (
     Blueprint,
     Response,
@@ -17,7 +17,7 @@ from flask import (
 )
 from flask_cors import cross_origin
 from flask_login import current_user, login_required
-from forms import RunnerForm, RunnerSearchForm
+from project.forms import RunnerForm, RunnerSearchForm
 from project.app_factory import create_app
 from project.get_data_from_postgresql import GetDataFromPostgresql, StreamingData
 from tables import Results
@@ -50,6 +50,7 @@ def profile():
     return render_template("profile.html", name=current_user.name)
 
 @main.route("/register_runners", methods=["GET", "POST"])
+@login_required
 def register_runners():
     search = RunnerSearchForm(request.form)
     if request.method == "POST":
@@ -61,7 +62,7 @@ def register_runners():
 @main.route("/results", methods=["GET", "POST"])
 @login_required
 def search_results(search_string=None):
-    from models import Runners
+    from project.models import Runners
     search_string = request.form.get("search", "").strip()
     select_category = request.form.get("select", "")
 
@@ -77,8 +78,7 @@ def search_results(search_string=None):
 
     if not results:
         flash("No results found!")
-        return redirect(url_for("main.register_runners", _external=True))
-
+        return redirect(url_for('main.register_runners', _external=True, _scheme='https'))
     # convert query results to a Flask-Table
     table = Results(results)
 
@@ -90,7 +90,7 @@ def new_runner():
     """
     Add a new runner
     """
-    from models import Runners
+    from project.models import Runners
     form = RunnerForm(request.form)
 
     if request.method == "POST":
@@ -112,7 +112,7 @@ def new_runner():
 
         save_changes(new_runners, form, new=True)
         flash("New runner created successfully!")
-        return redirect("/register_runners")
+        return redirect(url_for('main.register_runners', _external=True, _scheme='https'))
     else:
         print("error")
 
@@ -146,7 +146,7 @@ def save_changes(runners, form, new=False):
 @main.route("/edit/<int:id>", methods=["GET", "POST"])
 @login_required
 def edit(id):
-    from models import Runners
+    from project.models import Runners
     qry = db_session.query(Runners).filter(Runners.id == id)
     a_runner = qry.first()
 
@@ -157,7 +157,7 @@ def edit(id):
             # save edits
             save_changes(a_runner, form)
             flash("Runner updated successfully!")
-            return redirect(url_for('main.register_runners', _external=True))
+            return redirect(url_for('main.register_runners', _external=True, _scheme='https'))
         return render_template("edit_runner.html", form=form)
         
     else:
@@ -166,7 +166,7 @@ def edit(id):
 @main.route("/delete/<int:id>", methods=["GET", "POST"])
 @login_required
 def delete(id):
-    from models import Runners
+    from project.models import Runners
     """
     Delete the item in the database that matches the specified
     id in the URL
@@ -183,7 +183,7 @@ def delete(id):
             db_session.commit()
 
             flash("Runner deleted successfully!")
-            return redirect(url_for("main.register_runners", _external=True))
+            return redirect(url_for("main.register_runners", _external=True, _scheme='https'))
         return render_template("delete_runner.html", form=form)
     else:
         return "Error deleting #{id}".format(id=id)

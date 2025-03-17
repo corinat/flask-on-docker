@@ -1,4 +1,4 @@
-from models import User
+from project.models import User
 
 
 class UserHelper:

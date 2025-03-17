@@ -1,7 +1,7 @@
 import os
 
 from flask.cli import FlaskGroup
-from models import CiucasRoute, Runners
+from project.models import CiucasRoute, Runners
 from project.app_factory import create_app, db
 from project.helper import UserHelper
 from project.insert_json_to_postgres import InsertMockDataToPostrges

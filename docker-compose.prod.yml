@@ -50,7 +50,7 @@ services:
       - template_volume:/home/app/web/project/templates
       - /etc/letsencrypt:/etc/letsencrypt:ro
     ports:
-      - "1337:1337" # Exposing Nginx on port 1337
+            # - "1337:1337" # Exposing Nginx on port 1337
       - "1443:1443"  
     depends_on:
       - web

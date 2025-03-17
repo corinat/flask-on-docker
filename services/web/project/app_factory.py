@@ -8,11 +8,10 @@ import os
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
-server_name = os.getenv("SERVER_NAME")  # Include the port
+#server_name = os.getenv("SERVER_NAME")  # Include the port
 def create_app():
     app = Flask(__name__)
     app.config['PREFERRED_URL_SCHEME'] = 'https'
-    app.config['SERVER_NAME'] = server_name
     app.config['APPLICATION_ROOT'] = '/'
     # load configuration
     app.config.from_object('project.config.Config')  # correct
@@ -29,7 +28,7 @@ def create_app():
       allow_headers=["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"])
 
     # import models after db is initialized to avoid circular imports
-    from models import CiucasRoute, Runners, User  
+    from project.models import CiucasRoute, Runners, User  
 
     @login_manager.user_loader
     def load_user(user_id):
@@ -37,7 +36,7 @@ def create_app():
             return session.get(User, int(user_id))  # safer query
 
     # register blueprints
-    from auth import auth  
+    from project.auth import auth  
     app.register_blueprint(auth)
 
     from project.routes import main  

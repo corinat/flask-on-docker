@@ -4,8 +4,6 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 APP_FOLDER = os.getenv("APP_FOLDER", basedir)  # default to current directory
 
 class Config(object):
-    SERVER_NAME = os.getenv("SERVER_NAME")  # Include the port
-
     PREFERRED_URL_SCHEME = "https"
     DATABASE_URL = os.getenv("DATABASE_URL", None)
     SECRET_KEY = os.getenv("SECRET_KEY", "default-secret-key")
