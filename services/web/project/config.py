@@ -4,8 +4,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 APP_FOLDER = os.getenv("APP_FOLDER", basedir)  # default to current directory
 
 class Config(object):
-    PREFERRED_URL_SCHEME = "https" if os.getenv("FLASK_HTTPS") else "http"
-    SERVER_NAME = os.getenv("SERVER_NAME", None)  # none means no default
+    PREFERRED_URL_SCHEME = "https"
     DATABASE_URL = os.getenv("DATABASE_URL", None)
     SECRET_KEY = os.getenv("SECRET_KEY", "default-secret-key")
 

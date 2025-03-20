@@ -1,6 +1,6 @@
 import json
 
-from models import db
+from project.models import db
 
 
 class InsertMockDataToPostrges:

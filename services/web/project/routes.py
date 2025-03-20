@@ -1,15 +1,28 @@
 
 import json
+import os
+import time
 
-from db_setup import db_session
-from flask import Blueprint, Response, flash, redirect, render_template, request, send_from_directory, url_for
+from project.db_setup import db_session
+from flask import (
+    Blueprint,
+    Response,
+    flash,
+    redirect,
+    render_template,
+    request,
+    send_from_directory,
+    stream_with_context,
+    url_for,
+)
 from flask_cors import cross_origin
 from flask_login import current_user, login_required
-from forms import RunnerForm, RunnerSearchForm
+from project.forms import RunnerForm, RunnerSearchForm
 from project.app_factory import create_app
 from project.get_data_from_postgresql import GetDataFromPostgresql, StreamingData
 from tables import Results
 from werkzeug.utils import secure_filename
+from flask_cors import CORS, cross_origin
 
 app = create_app
 # Initialize PostgreSQL data handlers
@@ -22,22 +35,19 @@ main = Blueprint("main", __name__)
 indexes = []
 runner_index = []
 
-
 @main.route("/", methods=["GET", "POST"])
+@login_required
 def index():
-    # return render_template('index.html')
     search = RunnerSearchForm(request.form)
     if request.method == "POST":
         return search_results(search)
 
     return render_template("index.html", form=search)
 
-
 @main.route("/profile")
 @login_required
 def profile():
     return render_template("profile.html", name=current_user.name)
-
 
 @main.route("/register_runners", methods=["GET", "POST"])
 @login_required
@@ -49,44 +59,10 @@ def register_runners():
     return render_template("register_runners.html", form=search)
 
 
-def get_data_from_ciucas_track():
-    running = True
-    while running:
-        stream_from_postgres = get_data.get_track_from_postgresql()
-        track = json.loads(stream_from_postgres)
-        all_points_track = track["features"]
-        len_values = len(all_points_track)
-        for index in range((len_values) - 1)[-100::]:
-            indexes.append(index)
-            yield all_points_track
-
-
-def sort_function(value):
-    return value["properties"]["ranking"]
-
-
-def random_index():
-    stream_runners_from_postgres = get_data.get_runners_from_postgresql()
-    runner = json.loads(stream_runners_from_postgres)
-    ciucas_runner = runner["features"]
-    for i in range(len(ciucas_runner)):
-        if ciucas_runner[i]["properties"]["categ"] == "Male(team)":
-            return 10
-        elif ciucas_runner[i]["properties"]["categ"] == "Female(team)":
-            return 79
-        elif ciucas_runner[i]["properties"]["categ"] == "Mix(team)":
-            return 41
-        elif ciucas_runner[i]["properties"]["categ"] == "Male(individual)":
-            return 56
-        elif ciucas_runner[i]["properties"]["categ"] == "Female(individual)":
-            return 69
-
-
-@cross_origin()
 @main.route("/results", methods=["GET", "POST"])
 @login_required
 def search_results(search_string=None):
-    from models import Runners
+    from project.models import Runners
     search_string = request.form.get("search", "").strip()
     select_category = request.form.get("select", "")
 
@@ -102,13 +78,11 @@ def search_results(search_string=None):
 
     if not results:
         flash("No results found!")
-        return redirect(url_for("main.register_runners"))
-
+        return redirect(url_for('main.register_runners', _external=True, _scheme='https'))
     # convert query results to a Flask-Table
     table = Results(results)
 
     return render_template("results.html", table=table)
-
 
 @main.route("/new_runner", methods=["GET", "POST"])
 @login_required
@@ -116,7 +90,7 @@ def new_runner():
     """
     Add a new runner
     """
-    from models import Runners
+    from project.models import Runners
     form = RunnerForm(request.form)
 
     if request.method == "POST":
@@ -135,17 +109,16 @@ def new_runner():
             ranking=form.ranking.data,
             time_=form.time_.data if form.time_.data else None  # Optional field
         )
-        # print(new_runner)
+
         save_changes(new_runners, form, new=True)
         flash("New runner created successfully!")
-        return redirect("/register_runners")
+        return redirect(url_for('main.register_runners', _external=True, _scheme='https'))
     else:
         print("error")
 
     return render_template("new_runner.html", form=form)
 
 
-@login_required
 def save_changes(runners, form, new=False):
     """
     Save the changes to the database
@@ -170,11 +143,10 @@ def save_changes(runners, form, new=False):
     # commit the data to the database
     db_session.commit()
 
-
 @main.route("/edit/<int:id>", methods=["GET", "POST"])
 @login_required
 def edit(id):
-    from models import Runners
+    from project.models import Runners
     qry = db_session.query(Runners).filter(Runners.id == id)
     a_runner = qry.first()
 
@@ -185,17 +157,16 @@ def edit(id):
             # save edits
             save_changes(a_runner, form)
             flash("Runner updated successfully!")
-            return redirect(url_for('main.register_runners', _external=True))
+            return redirect(url_for('main.register_runners', _external=True, _scheme='https'))
         return render_template("edit_runner.html", form=form)
         
     else:
         return "Error loading #{id}".format(id=id)
 
-
 @main.route("/delete/<int:id>", methods=["GET", "POST"])
 @login_required
 def delete(id):
-    from models import Runners
+    from project.models import Runners
     """
     Delete the item in the database that matches the specified
     id in the URL
@@ -212,13 +183,14 @@ def delete(id):
             db_session.commit()
 
             flash("Runner deleted successfully!")
-            return redirect(url_for("main.register_runners"))
+            return redirect(url_for("main.register_runners", _external=True, _scheme='https'))
         return render_template("delete_runner.html", form=form)
     else:
         return "Error deleting #{id}".format(id=id)
-    
-@main.route("/live", methods=["GET"])
-@login_required
+
+@main.route("/live", strict_slashes=False, methods=["GET"])
+@cross_origin(origins=["https://mapwizard.eu", "https://www.mapwizard.eu"])
+# @login_required
 def live():
     running = True
     possition_on_the_track = streem_data.indexes

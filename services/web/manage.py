@@ -1,7 +1,7 @@
 import os
 
 from flask.cli import FlaskGroup
-from models import CiucasRoute, Runners
+from project.models import CiucasRoute, Runners
 from project.app_factory import create_app, db
 from project.helper import UserHelper
 from project.insert_json_to_postgres import InsertMockDataToPostrges
@@ -31,7 +31,7 @@ def seed_db_route():
         CiucasRoute,
         f"{WORKDIR}/project/mock_data/trim_all_route.json",
     )
-    print("Finished ingesting data in table")
+    print("Finished ingesting trim_all_route.json in table")
     db.session.commit()
 
 @cli.command("seed_db_runners")
@@ -40,7 +40,7 @@ def seed_db_runners():
         Runners,
         f"{WORKDIR}/project/mock_data/trim_runners.json",
     )
-    print("Finished ingesting data in table")
+    print("Finished ingesting trim_runners.json data in table")
     db.session.commit()
 
 @cli.command("print_db")

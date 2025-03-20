@@ -1,5 +1,5 @@
 dummy_data = [
-    ("First_name_1", "Second_name_2", "ABC_1 City, XYZ_1 Town"),
-    ("First_name_2", "Second_name_2", "ABC_1 City, XYZ_2 Town"),
-    ("First_name_3", "Second_name_3", "ABC_1 City, XYZ_3 Town"),
+    ("first_name_1@yahoo.com", "name_1", "pass_1"),
+    ("first_name_2@yahoo.com", "name_2", "pass_2"),
+    ("first_name_3@yahoo.com", "name_3", "pass_3"),
 ]
