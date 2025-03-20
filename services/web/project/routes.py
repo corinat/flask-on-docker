@@ -20,7 +20,7 @@ from flask_login import current_user, login_required
 from project.forms import RunnerForm, RunnerSearchForm
 from project.app_factory import create_app
 from project.get_data_from_postgresql import GetDataFromPostgresql, StreamingData
-from tables import Results
+from project.tables import Results
 from werkzeug.utils import secure_filename
 from flask_cors import CORS, cross_origin
 
