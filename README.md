@@ -1,4 +1,4 @@
-# 🏃‍♂️ Real-Time Ultramarathon Tracker API:wq
+# 🏃‍♂️ Real-Time Ultramarathon Tracker API
 
 A **Flask-based API** for streaming **mock real-time geospatial data** of runners during an ultramarathon competition.
 
