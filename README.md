@@ -44,26 +44,26 @@ These files are required for the application to connect to the database and init
 📦 Production Setup
 🔨 Build and Run the Production Container
 
-    ```sh
-    docker compose -f docker-compose.prod.yml down -v 
-    docker compose -f docker-compose.prod.yml up -d --build
-    ```
+```sh
+docker compose -f docker-compose.prod.yml down -v 
+docker compose -f docker-compose.prod.yml up -d --build
+```
 
 🧰 Run the following commands to create and seed the database:
-    ```sh
-    docker compose -f docker-compose.prod.yml exec web python manage.py create_db   
-    docker compose -f docker-compose.prod.yml exec web python manage.py seed_db 
-    docker compose -f docker-compose.prod.yml exec web python manage.py seed_db_route
-    docker compose -f docker-compose.prod.yml exec web python manage.py seed_db_runners
-    ```
+```sh
+docker compose -f docker-compose.prod.yml exec web python manage.py create_db   
+docker compose -f docker-compose.prod.yml exec web python manage.py seed_db 
+docker compose -f docker-compose.prod.yml exec web python manage.py seed_db_route
+docker compose -f docker-compose.prod.yml exec web python manage.py seed_db_runners
+```
 
 🔁 Container Management
-    Restart containers
-    ```sh
-    docker compose -f docker-compose.prod.yml up -d
-    ```
+Restart containers
+```sh
+docker compose -f docker-compose.prod.yml up -d
+```
 
-    Force restart containers
-    ```
-    docker compose -f docker-compose.prod.yml restart
-    ```
+Force restart containers
+```
+docker compose -f docker-compose.prod.yml restart
+```
