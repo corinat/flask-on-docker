@@ -37,7 +37,7 @@ FLASK_APP=project/__init__.py
 FLASK_DEBUG=0
 APP_FOLDER=/home/app/web
 SECRET_KEY="9OLWxND4o83j4K4iuopO"
-
+```
 These files are required for the application to connect to the database and initialize the Flask app correctly.
 
 
