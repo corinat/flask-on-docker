@@ -28,9 +28,10 @@ POSTGRES_DB=hello_flask_prod
 POSTGRES_HOST=db
 POSTGRES_PORT=5432
 DATABASE_URL=postgresql://hello_flask:hello_flask@db:5432/hello_flask_prod
-
+```
 
 ### ✅ `.env.prod`
+
 ```env
 FLASK_APP=project/__init__.py
 FLASK_DEBUG=0
@@ -46,9 +47,9 @@ These files are required for the application to connect to the database and init
     ```sh
     docker compose -f docker-compose.prod.yml down -v 
     docker compose -f docker-compose.prod.yml up -d --build
-🧰   ```
+    ```
 
-🧰🔨 Run the following commands to create and seed the database:
+🧰 Run the following commands to create and seed the database:
     ```sh
     docker compose -f docker-compose.prod.yml exec web python manage.py create_db   
     docker compose -f docker-compose.prod.yml exec web python manage.py seed_db 
