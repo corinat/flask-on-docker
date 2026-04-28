@@ -1,18 +1,35 @@
+
+"""
+Utilities for retrieving and streaming track and runner data from a PostgreSQL database as GeoJSON.
+Includes classes for direct data access and for streaming/transforming data for live applications.
+"""
+
 import json
 import os
 
 import pandas as pd
 import psycopg2
 
-
 WORKDIR = os.getenv("APP_FOLDER")
 
+
 class GetDataFromPostgresql:
+    """
+    Provides methods to fetch track and runner data from PostgreSQL and return as GeoJSON.
+    """
     def __init__(self):
+        """
+        Initialize with a base GeoJSON structure.
+        """
         self.geojson_structure = {"type": "FeatureCollection", "name": "ciucasx3", "features": []}
 
     @staticmethod
     def connect_to_postgres():
+        """
+        Establish a connection to the PostgreSQL database using environment variables.
+        Returns:
+            psycopg2 connection object
+        """
         return psycopg2.connect(
             dbname=os.getenv("POSTGRES_DB"),
             user=os.getenv("POSTGRES_USER"),
@@ -23,6 +40,11 @@ class GetDataFromPostgresql:
         )
 
     def get_track_from_postgresql(self):
+        """
+        Fetch all track data from the ciucas_route table and return as GeoJSON string.
+        Returns:
+            str: GeoJSON string of track features
+        """
         conn = self.connect_to_postgres()
         query = """SELECT * FROM ciucas_route"""
 
@@ -36,6 +58,11 @@ class GetDataFromPostgresql:
         return json.dumps(track, indent=2, default=str, sort_keys=True)
 
     def get_runners_from_postgresql(self):
+        """
+        Fetch all runner data from the runners_ciucas table and return as GeoJSON string.
+        Returns:
+            str: GeoJSON string of runner features
+        """
         conn = self.connect_to_postgres()
         query = """SELECT * FROM runners_ciucas ORDER BY ranking ASC"""
 
@@ -54,11 +81,24 @@ class GetDataFromPostgresql:
 
 
 class StreamingData:
+    """
+    Provides methods for streaming track data and updating runner properties for live tracking.
+    """
     def __init__(self):
+        """
+        Initialize with an empty list of indexes.
+        """
         self.indexes = []
         
 
     def streem_track_from_postgres(self, track_from_postgresql):
+        """
+        Generator that yields all track points one by one, updating indexes.
+        Args:
+            track_from_postgresql (str): GeoJSON string of track data
+        Yields:
+            list: List of all track points (features)
+        """
         while track_from_postgresql:
             track = json.loads(track_from_postgresql)
             all_points_track = track["features"]
@@ -70,6 +110,17 @@ class StreamingData:
     def update_runner_properties(
         self, runner, streem_features_from_ciucas_track, runner_index, track_index, spacing_factor
     ):
+        """
+        Update a runner's properties and coordinates based on their position on the track.
+        Args:
+            runner (dict): Runner feature dict
+            streem_features_from_ciucas_track (list): List of track features
+            runner_index (int): Index of the runner
+            track_index (int): Index on the track
+            spacing_factor (int): Spacing factor for animation
+        Returns:
+            dict: Updated runner feature dict
+        """
         runner_position = (
             (spacing_factor * runner_index + track_index) % len(streem_features_from_ciucas_track)
             if (runner_index + track_index) >= 0

@@ -1,28 +1,25 @@
+"""
+Flask routes for the main application.
+
+This module defines the main Blueprint and all route handlers for the web app, including:
+- Index, profile, registration, and results pages
+- CRUD operations for runners
+- Live data streaming endpoints
+- Integration with forms, authentication, and database
+"""
+
 
 import json
 import os
-import time
 
-from project.db_setup import db_session
-from flask import (
-    Blueprint,
-    Response,
-    flash,
-    redirect,
-    render_template,
-    request,
-    send_from_directory,
-    stream_with_context,
-    url_for,
-)
+from flask import Blueprint, Response, flash, redirect, render_template, request, url_for
 from flask_cors import cross_origin
 from flask_login import current_user, login_required
-from project.forms import RunnerForm, RunnerSearchForm
 from project.app_factory import create_app
+from project.db_setup import db_session
+from project.forms import RunnerForm, RunnerSearchForm
 from project.get_data_from_postgresql import GetDataFromPostgresql, StreamingData
-from project.tables import Results
-from werkzeug.utils import secure_filename
-from flask_cors import CORS, cross_origin
+from project.tables import results_to_dicts
 
 app = create_app
 # Initialize PostgreSQL data handlers
@@ -38,6 +35,9 @@ runner_index = []
 @main.route("/", methods=["GET", "POST"])
 @login_required
 def index():
+    """
+    Render the index page with a runner search form. Handles search POST requests.
+    """
     search = RunnerSearchForm(request.form)
     if request.method == "POST":
         return search_results(search)
@@ -47,11 +47,17 @@ def index():
 @main.route("/profile")
 @login_required
 def profile():
+    """
+    Render the profile page for the current user.
+    """
     return render_template("profile.html", name=current_user.name)
 
 @main.route("/register_runners", methods=["GET", "POST"])
 @login_required
 def register_runners():
+    """
+    Render the runner registration page and handle search POST requests.
+    """
     search = RunnerSearchForm(request.form)
     if request.method == "POST":
         return search_results(search)
@@ -62,6 +68,9 @@ def register_runners():
 @main.route("/results", methods=["GET", "POST"])
 @login_required
 def search_results(search_string=None):
+    """
+    Search for runners in the database by name and category, and render the results table.
+    """
     from project.models import Runners
     search_string = request.form.get("search", "").strip()
     select_category = request.form.get("select", "")
@@ -78,15 +87,35 @@ def search_results(search_string=None):
 
     if not results:
         flash("No results found!")
-        return redirect(url_for('main.register_runners', _external=True, _scheme='https'))
-    # convert query results to a Flask-Table
-    table = Results(results)
-
-    return render_template("results.html", table=table)
+        return redirect(url_for('main.register_runners', _external=True, _scheme=os.getenv('PREFERRED_URL_SCHEME', 'http')))
+    # convert query results to list of dicts for table rendering
+    table_data = results_to_dicts(results)
+    headers = [
+        ('IMEI', 'imei'),
+        ('Name', 'name'),
+        ('Display Name', 'displayname'),
+        ('Gender', 'gender'),
+        ('Category', 'categ'),
+        ('Club', 'club'),
+        ('BIB', 'bib'),
+        ('Age', 'age'),
+        ('Rank', 'ranking'),
+        ('Time', 'time_'),
+        ('Edit', 'edit'),
+        ('Delete', 'delete'),
+    ]
+    # Add edit/delete URLs
+    for row in table_data:
+        row['edit'] = url_for('main.edit', id=row['id'])
+        row['delete'] = url_for('main.delete', id=row['id'])
+    return render_template("results.html", table_data=table_data, headers=headers)
 
 @main.route("/new_runner", methods=["GET", "POST"])
 @login_required
 def new_runner():
+    """
+    Add a new runner to the database using the submitted form data.
+    """
     """
     Add a new runner
     """
@@ -112,7 +141,7 @@ def new_runner():
 
         save_changes(new_runners, form, new=True)
         flash("New runner created successfully!")
-        return redirect(url_for('main.register_runners', _external=True, _scheme='https'))
+        return redirect(url_for('main.register_runners', _external=True, _scheme=os.getenv('PREFERRED_URL_SCHEME', 'http')))
     else:
         print("error")
 
@@ -121,7 +150,7 @@ def new_runner():
 
 def save_changes(runners, form, new=False):
     """
-    Save the changes to the database
+    Save runner changes to the database. If new=True, add as a new record.
     """
     runners.id = form.id.data
     runners.imei = form.imei.data
@@ -146,6 +175,9 @@ def save_changes(runners, form, new=False):
 @main.route("/edit/<int:id>", methods=["GET", "POST"])
 @login_required
 def edit(id):
+    """
+    Edit an existing runner's details by ID.
+    """
     from project.models import Runners
     qry = db_session.query(Runners).filter(Runners.id == id)
     a_runner = qry.first()
@@ -157,7 +189,7 @@ def edit(id):
             # save edits
             save_changes(a_runner, form)
             flash("Runner updated successfully!")
-            return redirect(url_for('main.register_runners', _external=True, _scheme='https'))
+            return redirect(url_for('main.register_runners', _external=True, _scheme=os.getenv('PREFERRED_URL_SCHEME', 'http')))
         return render_template("edit_runner.html", form=form)
         
     else:
@@ -166,11 +198,11 @@ def edit(id):
 @main.route("/delete/<int:id>", methods=["GET", "POST"])
 @login_required
 def delete(id):
+    """
+    Delete a runner from the database by ID.
+    """
     from project.models import Runners
-    """
-    Delete the item in the database that matches the specified
-    id in the URL
-    """
+
     qry = db_session.query(Runners).filter(Runners.id == id)
     runner = qry.first()
 
@@ -183,15 +215,19 @@ def delete(id):
             db_session.commit()
 
             flash("Runner deleted successfully!")
-            return redirect(url_for("main.register_runners", _external=True, _scheme='https'))
+            return redirect(url_for("main.register_runners", _external=True, _scheme=os.getenv('PREFERRED_URL_SCHEME', 'http')))
         return render_template("delete_runner.html", form=form)
     else:
         return "Error deleting #{id}".format(id=id)
 
 @main.route("/live", strict_slashes=False, methods=["GET"])
 @cross_origin(origins=["https://mapwizard.eu", "https://www.mapwizard.eu"])
+@cross_origin(origins=["http://localhost:8080", "http://127.0.0.1:8080", "https://mapwizard.eu", "https://www.mapwizard.eu"])
 # @login_required
 def live():
+    """
+    Stream live runner and track data as JSON for the frontend.
+    """
     running = True
     possition_on_the_track = streem_data.indexes
     spacing_factor = 50  # Adjust the spacing factor as needed

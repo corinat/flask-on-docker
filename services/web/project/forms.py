@@ -1,9 +1,17 @@
-# forms.py
+
+"""
+Form definitions for runner search and runner data entry using WTForms.
+
+Provides RunnerSearchForm for searching runners and RunnerForm for creating/editing runner records.
+"""
 
 from wtforms import Form, SelectField, StringField, validators
 
 
 class RunnerSearchForm(Form):
+    """
+    WTForms form for searching runners by name and category.
+    """
     choices_class = [('Female(individual)', 'Female(individual)'),
                      ('Mix(team)', 'Mix(team)'),
                      ('Female(team)', 'Female(team)'),
@@ -15,6 +23,9 @@ class RunnerSearchForm(Form):
 
 
 class RunnerForm(Form):
+    """
+    WTForms form for creating or editing runner records, including all runner fields.
+    """
     runners_types = [('Female(individual)', 'Female(individual)'),
                      ('Mix(team)', 'Mix(team)'),
                      ('Female(team)', 'Female(team)'),

@@ -1,3 +1,10 @@
+
+"""
+SQLAlchemy models for users, runners, and track routes in the Flask app.
+
+Defines User, Runners, and CiucasRoute models for authentication and race data.
+"""
+
 from flask_login import UserMixin
 from project.app_factory import db
 from sqlalchemy import Column, Float, Integer, String
@@ -5,6 +12,9 @@ from sqlalchemy.dialects.postgresql import BIGINT
 
 
 class User(db.Model, UserMixin):
+    """
+    User model for authentication and user management.
+    """
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(10000), unique=True)
@@ -23,6 +33,9 @@ class User(db.Model, UserMixin):
         return User.query.all()
 
 class Runners(db.Model):
+    """
+    Model for storing runner information and race results.
+    """
     __tablename__ = "runners_ciucas"
 
     mytable_key = Column(BIGINT, nullable=False, primary_key=True, unique=True, autoincrement=True)
@@ -53,6 +66,9 @@ class Runners(db.Model):
 
 
 class CiucasRoute(db.Model):
+    """
+    Model for storing track route points and elevation data.
+    """
     __tablename__ = "ciucas_route"
 
     mytable_key = Column(BIGINT, nullable=False, primary_key=True, unique=True, autoincrement=True)

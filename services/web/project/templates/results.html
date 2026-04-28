@@ -1,5 +1,28 @@
 {% extends "base.html" %}
 {% block content %}
 <title>Results - Runners</title>
-{{ table }}
+<table class="table table-bordered table-striped table-hover table-dark">
+    <thead>
+        <tr>
+            {% for header, key in headers %}
+            <th>{{ header }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in table_data %}
+        <tr>
+            {% for header, key in headers %}
+            {% if key == 'edit' %}
+            <td><a href="{{ row.edit }}" class="button is-link is-light is-small">Edit</a></td>
+            {% elif key == 'delete' %}
+            <td><a href="{{ row.delete }}" class="button is-link is-light is-small">Delete</a></td>
+            {% else %}
+            <td>{{ row[key] }}</td>
+            {% endif %}
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}
