@@ -26,13 +26,7 @@ This project processes **GeoJSON files** representing runners and the track, and
 	docker compose -f docker-compose.dev.yml exec web python manage.py seed_db_route
 	docker compose -f docker-compose.dev.yml exec web python manage.py seed_db_runners
 	```
-
-# 🏃‍♂️ Real-Time Ultramarathon Tracker API
-
-A Flask-based API for streaming mock real-time geospatial data of runners during an ultramarathon competition.
-
-This project processes GeoJSON files representing runners and the track, and generates live location and distance updates for each participant.
-
+	
 ---
 
 ## 🚀 Features
