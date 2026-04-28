@@ -3,6 +3,7 @@ ETL utility to extract 'properties' from GeoJSON features and write them as a li
 
 Processes both route and runner GeoJSON files for downstream ingestion.
 """
+
 import json
 
 
@@ -15,24 +16,25 @@ def trim_json(input_geojson, output_json):
         output_json (str): Path to the output JSON file.
     """
     trim_dictionary = []
-    with open(input_geojson, 'r') as f:
+    with open(input_geojson, "r") as f:
         data = json.load(f)
-        features = data['features']
+        features = data["features"]
         print(f"Found {len(features)} features in {input_geojson}")
         for feature in features:
-            trim_dictionary.append(feature['properties'])
+            trim_dictionary.append(feature["properties"])
     with open(output_json, "w") as jsonFile:
         json.dump(trim_dictionary, jsonFile, ensure_ascii=False, indent=4)
     print(f"Wrote {len(trim_dictionary)} items to {output_json}\n")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     import sys
 
     # Default file paths
-    default_input_1 = 'project/mock_data/ciucas_route_distance.geojson'
-    default_output_1 = 'project/mock_data/ciucas_route.json'
-    default_input_2 = 'process_data/data/runners.geojson'
-    default_output_2 = 'project/mock_data/ciucas_runners.json'
+    default_input_1 = "project/mock_data/ciucas_route_distance.geojson"
+    default_output_1 = "project/mock_data/ciucas_route.json"
+    default_input_2 = "process_data/data/runners.geojson"
+    default_output_2 = "project/mock_data/ciucas_runners.json"
 
     if len(sys.argv) == 1:
         # No arguments, use defaults for both

@@ -1,4 +1,3 @@
-
 """
 Utilities for retrieving and streaming track and runner data from a PostgreSQL database as GeoJSON.
 Includes classes for direct data access and for streaming/transforming data for live applications.
@@ -17,6 +16,7 @@ class GetDataFromPostgresql:
     """
     Provides methods to fetch track and runner data from PostgreSQL and return as GeoJSON.
     """
+
     def __init__(self):
         """
         Initialize with a base GeoJSON structure.
@@ -34,7 +34,7 @@ class GetDataFromPostgresql:
             dbname=os.getenv("POSTGRES_DB"),
             user=os.getenv("POSTGRES_USER"),
             password=os.getenv("POSTGRES_PASSWORD"),
-            host=os.getenv("POSTGRES_HOST"), 
+            host=os.getenv("POSTGRES_HOST"),
             port=os.getenv("POSTGRES_PORT"),
             connect_timeout=3,
         )
@@ -84,12 +84,12 @@ class StreamingData:
     """
     Provides methods for streaming track data and updating runner properties for live tracking.
     """
+
     def __init__(self):
         """
         Initialize with an empty list of indexes.
         """
         self.indexes = []
-        
 
     def streem_track_from_postgres(self, track_from_postgresql):
         """
@@ -105,7 +105,6 @@ class StreamingData:
             for index, _ in enumerate(all_points_track):
                 self.indexes.append(index)
                 yield all_points_track
-                
 
     def update_runner_properties(
         self, runner, streem_features_from_ciucas_track, runner_index, track_index, spacing_factor

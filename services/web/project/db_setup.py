@@ -1,4 +1,3 @@
-
 """
 Database setup and session management for SQLAlchemy in the Flask app.
 
@@ -31,16 +30,14 @@ if DATABASE_URI.startswith("postgres://"):
 
 engine = create_engine(DATABASE_URI)
 
-db_session = scoped_session(sessionmaker(autocommit=False,
-                                         autoflush=False,
-                                         bind=engine))
+db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
 
 Base = declarative_base()
 Base.query = db_session.query_property()
+
 
 def init_db():
     """
     Import all models and create tables in the database if they do not exist.
     """
-    import project.models
     Base.metadata.create_all(bind=engine)

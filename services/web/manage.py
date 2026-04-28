@@ -9,9 +9,7 @@ from project.models import CiucasRoute, Runners
 
 app = create_app()
 cli = FlaskGroup(app)
-insert_json_to_postgres_db = staticmethod(
-    InsertMockDataToPostrges.insert_ciucas_data_in_postgres
-)
+insert_json_to_postgres_db = staticmethod(InsertMockDataToPostrges.insert_ciucas_data_in_postgres)
 WORKDIR = os.getenv("APP_FOLDER")
 
 
@@ -89,9 +87,7 @@ def seed_db_route():
         - JSON file must exist at the expected path.
     """
     json_path = f"{WORKDIR}/project/mock_data/ciucas_route.json"
-    InsertMockDataToPostrges.insert_ciucas_data_in_postgres(
-        CiucasRoute, json_path
-    )
+    InsertMockDataToPostrges.insert_ciucas_data_in_postgres(CiucasRoute, json_path)
     print("Finished ingesting ciucas_route.json in table")
 
 
@@ -109,9 +105,7 @@ def seed_db_runners():
         - JSON file must exist at the expected path.
     """
     json_path = f"{WORKDIR}/project/mock_data/ciucas_runners.json"
-    InsertMockDataToPostrges.insert_ciucas_data_in_postgres(
-        Runners, json_path
-    )
+    InsertMockDataToPostrges.insert_ciucas_data_in_postgres(Runners, json_path)
     print("Finished ingesting ciucas_runners.json data in table")
 
 

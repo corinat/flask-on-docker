@@ -21,7 +21,10 @@ class UserHelper:
         """
         user_list = User.print_all_user()
         for user in user_list:
-            print(f"User Name : {getattr(user, 'first_name', user.name if hasattr(user, 'name') else '')}  {getattr(user, 'last_name', '')}, Email : {user.email}")
+            first_name = getattr(user, "first_name", user.name if hasattr(user, "name") else "")
+            last_name = getattr(user, "last_name", "")
+            email = user.email
+            print(f"User Name : {first_name} {last_name}, " f"Email : {email}")
         if len(user_list) == 0:
             print("No User Record Found")
 

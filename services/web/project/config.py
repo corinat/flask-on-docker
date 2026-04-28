@@ -1,4 +1,3 @@
-
 """
 Configuration module for Flask application settings.
 
@@ -10,11 +9,13 @@ import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 APP_FOLDER = os.getenv("APP_FOLDER", basedir)  # default to current directory
 
+
 class Config(object):
     """
     Flask configuration class. Loads settings from environment variables or uses defaults.
     Sets up database URI, secret key, and folder paths for static, media, and templates.
     """
+
     PREFERRED_URL_SCHEME = os.getenv("PREFERRED_URL_SCHEME", "https")
     DATABASE_URL = os.getenv("DATABASE_URL", None)
     SECRET_KEY = os.getenv("SECRET_KEY", "default-secret-key")

@@ -1,4 +1,3 @@
-
 """
 Authentication blueprint for login, signup, and logout routes.
 
@@ -37,15 +36,15 @@ def login_post():
 
     if not user:
         flash("No account found. Please sign up.")
-        return redirect(url_for("auth.signup", _external=True, _scheme=os.getenv('PREFERRED_URL_SCHEME', 'http')))
+        return redirect(url_for("auth.signup", _external=True, _scheme=os.getenv("PREFERRED_URL_SCHEME", "http")))
 
     if not check_password_hash(user.password, password):
         flash("Incorrect password.")
-        return redirect(url_for("auth.login", _external=True, _scheme=os.getenv('PREFERRED_URL_SCHEME', 'http')))
+        return redirect(url_for("auth.login", _external=True, _scheme=os.getenv("PREFERRED_URL_SCHEME", "http")))
 
     # log in the user
     login_user(user, remember=remember)
-    return redirect(url_for("main.profile", _external=True, _scheme=os.getenv('PREFERRED_URL_SCHEME', 'http')))
+    return redirect(url_for("main.profile", _external=True, _scheme=os.getenv("PREFERRED_URL_SCHEME", "http")))
 
 
 @auth.route("/signup")
@@ -69,7 +68,7 @@ def signup_post():
 
     if user:
         flash("Email address already exists")
-        return redirect(url_for("auth.signup", _external=True, _scheme=os.getenv('PREFERRED_URL_SCHEME', 'http')))
+        return redirect(url_for("auth.signup", _external=True, _scheme=os.getenv("PREFERRED_URL_SCHEME", "http")))
 
     # create a new user with the form data
     new_user = User(
@@ -82,7 +81,7 @@ def signup_post():
     db_session.add(new_user)
     db_session.commit()
 
-    return redirect(url_for("auth.login", _external=True, _scheme=os.getenv('PREFERRED_URL_SCHEME', 'http')))
+    return redirect(url_for("auth.login", _external=True, _scheme=os.getenv("PREFERRED_URL_SCHEME", "http")))
 
 
 @auth.route("/logout")
@@ -92,4 +91,4 @@ def logout():
     Log out the current user and redirect to the index page.
     """
     logout_user()
-    return redirect(url_for("main.index", _external=True, _scheme=os.getenv('PREFERRED_URL_SCHEME', 'http')))
+    return redirect(url_for("main.index", _external=True, _scheme=os.getenv("PREFERRED_URL_SCHEME", "http")))
