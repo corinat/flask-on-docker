@@ -1,3 +1,10 @@
+"""
+Database setup and session management for SQLAlchemy in the Flask app.
+
+Loads environment variables, configures the database engine, session, and base model.
+Provides init_db() to initialize all tables.
+"""
+
 import os
 
 from dotenv import load_dotenv
@@ -23,13 +30,14 @@ if DATABASE_URI.startswith("postgres://"):
 
 engine = create_engine(DATABASE_URI)
 
-db_session = scoped_session(sessionmaker(autocommit=False,
-                                         autoflush=False,
-                                         bind=engine))
+db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
 
 Base = declarative_base()
 Base.query = db_session.query_property()
 
+
 def init_db():
-    import project.models
+    """
+    Import all models and create tables in the database if they do not exist.
+    """
     Base.metadata.create_all(bind=engine)

@@ -1,57 +1,78 @@
 import json
-from haversine import haversine, Unit
+
+from haversine import haversine
 
 
-x = []
-y = []
-indexes = []
-list_dist = []
+def add_distance(input_file, output_file):
+    """
+    Reads a GeoJSON file, computes cumulative distances between consecutive
+    coordinate points, and writes the updated data to a new file.
 
-get_ciucas = 'test2_ciucas_gpx.geojson'
+    Args:
+        input_file (str): Path to the input GeoJSON file.
+        output_file (str): Path where the output GeoJSON will be saved.
+
+    Behavior:
+        - Computes distance between consecutive points using the haversine formula.
+        - Stores cumulative distance (in meters) in each feature under 'distance'.
+        - First point gets distance = 0.
+    """
+    print(f"Processing: {input_file} -> {output_file}")
+
+    with open(input_file, "r") as f:
+        data = json.load(f)
+
+    features = data["features"]
+    print(f"Found {len(features)} features")
+
+    if not features:
+        print("No features found. Exiting.")
+        return
+
+    # Initialize first point
+    prev = (
+        features[0]["properties"]["ycoord"],
+        features[0]["properties"]["xcoord"],
+    )
+    cumulative_distance = 0.0
+    features[0]["properties"]["distance"] = 0.0
+
+    # Iterate once through all points
+    for i in range(1, len(features)):
+        curr = (
+            features[i]["properties"]["ycoord"],
+            features[i]["properties"]["xcoord"],
+        )
+
+        # distance in kilometers → convert to meters
+        step_distance = haversine(prev, curr) * 1000
+        cumulative_distance += step_distance
+
+        features[i]["properties"]["distance"] = round(cumulative_distance, 3)
+
+        prev = curr
+
+    with open(output_file, "w") as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+
+    print(f"Wrote distances in {output_file}\n")
 
 
-def add_data(my_array):
-    sum = 0
-    summed_array = []
-    for i in my_array:
-        summed_array += [sum / 1000]
-        sum += i
-        yield(sum * 1000)
+if __name__ == "__main__":
+    """
+    Entry point for command-line usage.
 
+    Usage:
+        python get_distance.py <input_file> <output_file>
+    """
+    import sys
 
-def add_distance():
-    with open(get_ciucas, 'r') as f:
-        runner = json.load(f)
-        all_runners = runner['features']
-        len_values = len(all_runners)
-        for index in range(len_values): 
-            indexes.append(index)
-        for i in range(len(indexes)):
-            x.append(all_runners[i]['properties']['xcoord'])
-            y.append(all_runners[i]['properties']['ycoord'])
+    default_input = "process_data/data/ciucas_gpx.geojson"
+    default_output = "project/mock_data/ciucas_route_distance.geojson"
 
-        #paring the coordinates in tuple 
-        lst_tuple = list(zip(y,x))
-        
-        for i in range(1, len(lst_tuple)):
-            current = lst_tuple[i]
-            previous = lst_tuple[i - 1]
-            distance = haversine(previous, current)
-            # print(type(distance))
-            distance_round = round(distance, 6)
-            list_dist.append(distance_round)
-            
-            for data in add_data(list_dist):   
-                all_runners[0]['properties'].update({"distance":0})
-                all_runners[i]['properties'].update({"distance":data})
-            
-        with open("updated_ciucas2.json", "w") as jsonFile:
-            json.dump(runner, jsonFile, ensure_ascii=False, indent=4)
-
-if __name__ == '__main__':
-    add_distance()     
-
-
-
-
-
+    if len(sys.argv) == 1:
+        add_distance(default_input, default_output)
+    elif len(sys.argv) == 3:
+        add_distance(sys.argv[1], sys.argv[2])
+    else:
+        print("Usage: python get_distance.py <input_file> <output_file>")

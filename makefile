@@ -1,6 +1,8 @@
 
-.PHONY: build exec-web create-db seed-route seed_users seed-runners down build-dev down-dev help
-help:                             ## Display a help message detailing commands and their purpose
+.PHONY: build exec-web create-db seed-route seed_users seed-runners down build-dev down-dev help print-db print-runners print-routes
+
+
+help:                           ## Display a help message detailing commands and their purpose
 	@echo "Commands:"
 	@grep -E '^([a-zA-Z_-]+:.*?## .*|#+ (.*))$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 	@echo ""
@@ -25,3 +27,12 @@ restart:						## restart containers
 	docker compose -f docker-compose.prod.yml up -d
 force-restart:					## force restart containers
 	docker compose -f docker-compose.prod.yml restart
+# --- Print table contents (prod) ---
+print-db:                       ## Print all user data from the production database
+	docker compose -f docker-compose.prod.yml exec web python manage.py print_db
+
+print-runners:                  ## Print all runners from the production database
+	docker compose -f docker-compose.prod.yml exec web python manage.py print_runners
+
+print-routes:                    ## Print all route points from the production database
+	docker compose -f docker-compose.prod.yml exec web python manage.py print_routes

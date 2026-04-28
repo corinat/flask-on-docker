@@ -1,22 +1,32 @@
-from flask_table import Col, LinkCol, Table
+"""
+Helpers for converting SQLAlchemy query results to dictionaries for table rendering.
+"""
 
 
-class Results(Table):
-    classes = ["table", "table-bordered", "table-striped", "table-hover", "table-dark"]
-    
-    mytable_key = Col('mytable_key', show=False)
-    id = Col('id', show=False)
-    imei = Col('IMEI')
-    name = Col('Name')
-    displayname = Col('Display Name')
-    gender = Col('Gender')
-    categ = Col('Category')
-    club = Col('Club')
-    bib = Col('BIB')
-    age = Col('Age')
-    ranking = Col('Rank')
-    time_ = Col('Time')
+def results_to_dicts(results):
+    """
+    Convert a list of SQLAlchemy model instances to a list of dictionaries for table display.
 
-    edit = LinkCol('Edit', 'main.edit', url_kwargs=dict(id='id'))
-    delete = LinkCol('Delete', 'main.delete', url_kwargs=dict(id='id'))
+    Args:
+        results (list): List of SQLAlchemy model instances.
 
+    Returns:
+        list: List of dictionaries with runner attributes.
+    """
+    dicts = []
+    for r in results:
+        d = {
+            "id": r.id,
+            "imei": getattr(r, "imei", ""),
+            "name": getattr(r, "name", ""),
+            "displayname": getattr(r, "displayname", ""),
+            "gender": getattr(r, "gender", ""),
+            "categ": getattr(r, "categ", ""),
+            "club": getattr(r, "club", ""),
+            "bib": getattr(r, "bib", ""),
+            "age": getattr(r, "age", ""),
+            "ranking": getattr(r, "ranking", ""),
+            "time_": getattr(r, "time_", ""),
+        }
+        dicts.append(d)
+    return dicts
