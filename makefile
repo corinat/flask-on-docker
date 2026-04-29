@@ -28,8 +28,8 @@ restart:						## restart containers
 force-restart:					## force restart containers
 	docker compose -f docker-compose.prod.yml restart
 # --- Print table contents (prod) ---
-print-db:                       ## Print all user data from the production database
-	docker compose -f docker-compose.prod.yml exec web python manage.py print_db
+print-users:                       ## Print all user data from the production database
+	docker compose -f docker-compose.prod.yml exec web python manage.py print_users
 
 print-runners:                  ## Print all runners from the production database
 	docker compose -f docker-compose.prod.yml exec web python manage.py print_runners
