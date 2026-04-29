@@ -4,12 +4,13 @@ from flask.cli import FlaskGroup
 from process_data.insert_json_to_postgres import InsertMockDataToPostrges
 from project.app_factory import create_app, db
 from project.helper import UserHelper
-from project.mock_data.data import dummy_data
-from project.models import CiucasRoute, Runners
+from project.models import CiucasRoute, Runners, User
 
 app = create_app()
 cli = FlaskGroup(app)
-insert_json_to_postgres_db = staticmethod(InsertMockDataToPostrges.insert_ciucas_data_in_postgres)
+insert_json_to_postgres_db = staticmethod(
+    InsertMockDataToPostrges.insert_ciucas_data_in_postgres
+)
 WORKDIR = os.getenv("APP_FOLDER")
 
 
@@ -32,8 +33,8 @@ def create_db():
     db.session.commit()
 
 
-@cli.command("seed_db")
-def seed_db():
+@cli.command("seed_db_users")
+def seed_db_users():
     """
     Seeds the database with dummy user data.
 
@@ -45,9 +46,11 @@ def seed_db():
     Dependencies:
         - Requires `dummy_data` to be defined and valid.
     """
-    users = UserHelper.add_dummy_user_data(dummy_data)
-    db.session.add_all(users)
-    db.session.commit()
+
+    # Path to your user dummy data JSON file
+    json_path = f"{WORKDIR}/project/mock_data/mock_users.json"
+    InsertMockDataToPostrges.insert_ciucas_data_in_postgres(User, json_path)
+    print("Finished ingesting mock_users.json data in table")
 
 
 def get_psycopg2_db_uri():
@@ -87,7 +90,9 @@ def seed_db_route():
         - JSON file must exist at the expected path.
     """
     json_path = f"{WORKDIR}/project/mock_data/ciucas_route.json"
-    InsertMockDataToPostrges.insert_ciucas_data_in_postgres(CiucasRoute, json_path)
+    InsertMockDataToPostrges.insert_ciucas_data_in_postgres(
+        CiucasRoute, json_path
+    )
     print("Finished ingesting ciucas_route.json in table")
 
 
@@ -105,7 +110,9 @@ def seed_db_runners():
         - JSON file must exist at the expected path.
     """
     json_path = f"{WORKDIR}/project/mock_data/ciucas_runners.json"
-    InsertMockDataToPostrges.insert_ciucas_data_in_postgres(Runners, json_path)
+    InsertMockDataToPostrges.insert_ciucas_data_in_postgres(
+        Runners, json_path
+    )
     print("Finished ingesting ciucas_runners.json data in table")
 
 
