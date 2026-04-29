@@ -9,7 +9,7 @@ A **Flask-based API** for streaming **mock real-time geospatial data** of runner
 ## 🚀 Features
 
 - Simulates real-time GPS tracking of runners
-- Processes and streams geospatial data (GeoJSON)
+- Processes and streams geospatial data
 - Built with Flask, served with Gunicorn + Nginx
 - Dockerized for easy production deployment
 
@@ -30,11 +30,11 @@ A **Flask-based API** for streaming **mock real-time geospatial data** of runner
 	docker compose -f docker-compose.dev.yml up -d --build
 	```
 4. (Optional) Preprocess data inside the container:
-   ```sh
-   docker compose -f docker-compose.dev.yml exec web bash
-   python process_data/get_distance.py
-   python process_data/trim_json.py
-   ```
+	```sh
+	docker compose -f docker-compose.dev.yml exec web bash
+	python process_data/get_distance.py
+	python process_data/trim_json.py
+	```
 5. Seed the development database (including users):
 	```sh
 	docker compose -f docker-compose.dev.yml exec web python manage.py create_db
@@ -45,10 +45,10 @@ A **Flask-based API** for streaming **mock real-time geospatial data** of runner
 	> **Note:** The seed_db_users command is intended for development only. Do not use it in production as it inserts mock/test users.
 
 6. **To fully reset and clean up your development environment, run:**
-```sh
-docker compose -f docker-compose.dev.yml down --remove-orphans -v
-```
-7. Open [http://127.0.0.1:8080/register_runners](http://127.0.0.1:8080/register_runners) to see the data table.
+	```sh
+	docker compose -f docker-compose.dev.yml down --remove-orphans -v
+	```
+7. Open [http://127.0.0.1:8080/register_runners](http://127.0.0.1:8080/	register_runners) to see the data table.
 8. For live data, visit [http://127.0.0.1:8080/live](http://127.0.0.1:8080/live).
 
 ---
