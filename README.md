@@ -1,31 +1,8 @@
 
 # 🏃‍♂️ Real-Time Ultramarathon Tracker API
 
-A **Flask-based API** for streaming **mock real-time geospatial data** of runners during an ultramarathon competition.
 
-This project processes **GeoJSON files** representing runners and the track, and generates **live location and distance** updates for each participant.
-
----
-
-## ⚡ Quickstart
-
-1. Clone this repo and `cd` into it.
-2. Copy and edit the following environment files in the project root (see below for example content):
-	- `.env.dev`
-	- `.env.dev.db`
-3. Build and start the development containers:
-	```sh
-	docker compose -f docker-compose.dev.yml down -v
-	docker compose -f docker-compose.dev.yml up -d --build
-	```
-4. Preprocess data if needed (see ETL section below).
-5. Seed the development database:
-	```sh
-	docker compose -f docker-compose.dev.yml exec web python manage.py create_db
-	docker compose -f docker-compose.dev.yml exec web python manage.py seed_db_users
-	docker compose -f docker-compose.dev.yml exec web python manage.py seed_db_route
-	docker compose -f docker-compose.dev.yml exec web python manage.py seed_db_runners
-	```
+A **Flask-based API** for streaming **mock real-time geospatial data** of runners during an ultramarathon competition. This project processes **GeoJSON files** representing runners and the track, and generates **live location and distance** updates for each participant.
 
 ---
 
@@ -66,8 +43,13 @@ This project processes **GeoJSON files** representing runners and the track, and
 	docker compose -f docker-compose.dev.yml exec web python manage.py seed_db_runners
 	```
 	> **Note:** The seed_db_users command is intended for development only. Do not use it in production as it inserts mock/test users.
-6. Open [http://127.0.0.1:8080/register_runners](http://127.0.0.1:8080/register_runners) to see the data table.
-7. For live data, visit [http://127.0.0.1:8080/live](http://127.0.0.1:8080/live).
+
+6. **To fully reset and clean up your development environment, run:**
+```sh
+docker compose -f docker-compose.dev.yml down --remove-orphans -v
+```
+7. Open [http://127.0.0.1:8080/register_runners](http://127.0.0.1:8080/register_runners) to see the data table.
+8. For live data, visit [http://127.0.0.1:8080/live](http://127.0.0.1:8080/live).
 
 ---
 
@@ -140,122 +122,9 @@ docker compose -f docker-compose.dev.yml exec web python manage.py print_routes
 
 **Production:**
 ```sh
-make print-db
+make print-users
 make print-runners
 make print-routes
-```
-
----
-
-## 📊 Visualization
-
-- Main data table: [http://127.0.0.1:8080/register_runners](http://127.0.0.1:8080/register_runners)
-- Live runner data: [http://127.0.0.1:8080/live](http://127.0.0.1:8080/live)
-
----
-
-## 🛠️ Accessing pgAdmin (PostgreSQL UI)
-
-To manage and inspect your PostgreSQL database visually, you can use **pgAdmin**. Once the development containers are running, open [http://localhost:5555](http://localhost:5555) in your browser.
-
-**Default login credentials:**
-- **Email:** admin@admin.com
-- **Password:** admin
-
----
-
-## 📂 Data Folders
-
-- Raw GeoJSON: `services/web/process_data/data/`
-- Processed/mock data: `services/web/project/mock_data/`
-
----
-
-**Python version:** 3.11 (see Dockerfiles)
-
-**Port mapping:**
-- Nginx serves the app at [http://127.0.0.1:8080/](http://127.0.0.1:8080/)
-- Flask runs internally on port 5000
-
-```sh
-docker compose -f docker-compose.dev.yml exec web python manage.py create_db
-docker compose -f docker-compose.dev.yml exec web python manage.py seed_db
-docker compose -f docker-compose.dev.yml exec web python manage.py seed_db_route
-docker compose -f docker-compose.dev.yml exec web python manage.py seed_db_runners
-```
-
-### ✅ Validate Table Contents (Print Data)
-
-After seeding, you can print the contents of your tables to validate the data:
-
-```sh
-# Print all user data
-docker compose -f docker-compose.dev.yml exec web python manage.py print_users
-
-# Print all runners
-docker compose -f docker-compose.dev.yml exec web python manage.py print_runners
-
-# Print all route points
-docker compose -f docker-compose.dev.yml exec web python manage.py print_routes
-```
-
----
-
-## 📦 Production Setup
-
-**Makefile usage:**
-- The Makefile is only for production setup (not used for development).
-- Run `make help` to see all available commands and their descriptions.
-
-### Build and Run the Production Container using Makefile commands
-
-```sh
-make down
-make build
-```
-
-### Create and Seed the Production Database
-
-```sh
-make create-db
-make seed_users
-make seed-route
-make seed-runners
-```
-
-### ✅ Validate Table Contents (Print Data)
-
-After seeding, you can print the contents of your tables to validate the data:
-
-```sh
-# Print all user data
-make print-db
-
-# Print all runners
-make print-runners
-
-# Print all route points
-make print-routes
-```
-
----
-
-## 🔁 Container Management
-
-### Restart containers (prod)
-```sh
-docker compose -f docker-compose.prod.yml up -d
-```
-
-### Restart containers (dev)
-```sh
-docker compose -f docker-compose.dev.yml up -d
-```
-
-### Force restart containers
-```sh
-docker compose -f docker-compose.prod.yml restart
-docker compose -f docker-compose.dev.yml restart
 ```
 
 ---
