@@ -22,11 +22,11 @@ This project processes **GeoJSON files** representing runners and the track, and
 5. Seed the development database:
 	```sh
 	docker compose -f docker-compose.dev.yml exec web python manage.py create_db
-	docker compose -f docker-compose.dev.yml exec web python manage.py seed_db
+	docker compose -f docker-compose.dev.yml exec web python manage.py seed_db_users
 	docker compose -f docker-compose.dev.yml exec web python manage.py seed_db_route
 	docker compose -f docker-compose.dev.yml exec web python manage.py seed_db_runners
 	```
-	
+
 ---
 
 ## 🚀 Features
@@ -44,24 +44,28 @@ This project processes **GeoJSON files** representing runners and the track, and
 2. Copy and edit the following environment files in the project root:
    - `.env.dev`
    - `.env.dev.db`
-3. Build and start the development containers:
-   ```sh
-   docker compose -f docker-compose.dev.yml down -v
-   docker compose -f docker-compose.dev.yml up -d --build
-   ```
+3. (Recommended) Stop and remove previous containers, including orphans and volumes:
+	```sh
+	docker compose -f docker-compose.dev.yml down --remove-orphans -v
+	```
+	Then build and start the development containers:
+	```sh
+	docker compose -f docker-compose.dev.yml up -d --build
+	```
 4. (Optional) Preprocess data inside the container:
    ```sh
    docker compose -f docker-compose.dev.yml exec web bash
    python process_data/get_distance.py
    python process_data/trim_json.py
    ```
-5. Seed the development database:
-   ```sh
-   docker compose -f docker-compose.dev.yml exec web python manage.py create_db
-   docker compose -f docker-compose.dev.yml exec web python manage.py seed_db
-   docker compose -f docker-compose.dev.yml exec web python manage.py seed_db_route
-   docker compose -f docker-compose.dev.yml exec web python manage.py seed_db_runners
-   ```
+5. Seed the development database (including users):
+	```sh
+	docker compose -f docker-compose.dev.yml exec web python manage.py create_db
+	docker compose -f docker-compose.dev.yml exec web python manage.py seed_db_users  # Use only in development!
+	docker compose -f docker-compose.dev.yml exec web python manage.py seed_db_route
+	docker compose -f docker-compose.dev.yml exec web python manage.py seed_db_runners
+	```
+	> **Note:** The seed_db_users command is intended for development only. Do not use it in production as it inserts mock/test users.
 6. Open [http://127.0.0.1:8080/register_runners](http://127.0.0.1:8080/register_runners) to see the data table.
 7. For live data, visit [http://127.0.0.1:8080/live](http://127.0.0.1:8080/live).
 
@@ -72,13 +76,13 @@ This project processes **GeoJSON files** representing runners and the track, and
 1. Ensure `.env.prod` and `.env.prod.db` exist in the project root (see below for example content).
 2. Build and run containers using the Makefile:
    ```sh
-   make down
-   make build
-   make create-db
-   make seed_users
-   make seed-route
-   make seed-runners
-   ```
+	make down
+	make build
+	make create-db
+	make seed-route
+	make seed-runners
+	```
+	> **Note:** Do not run any user seeding command in production. Only use seed_db_users in development.
 
 ---
 
@@ -114,6 +118,7 @@ DATABASE_URL=postgresql://hello_flask:hello_flask@db:5432/hello_flask_prod
 
 **.env.prod**
 ```env
+MY_DNS="mydns.com"
 FLASK_APP=project/__init__.py
 FLASK_DEBUG=0
 APP_FOLDER=/home/app/web

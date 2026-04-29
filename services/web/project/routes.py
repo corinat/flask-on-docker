@@ -116,9 +116,6 @@ def new_runner():
     """
     Add a new runner to the database using the submitted form data.
     """
-    """
-    Add a new runner
-    """
     from project.models import Runners
     form = RunnerForm(request.form)
 
