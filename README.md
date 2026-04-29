@@ -139,17 +139,17 @@ To start, open a shell inside the development web container:
 docker compose -f docker-compose.dev.yml exec web bash
 ```
 
-Inside the container, run the following scripts as needed:
+Inside the container, in the root directory, run the following scripts as needed:
 
 1. **Generate distance for each runner:**
 	```sh
-	python process_data/get_distance.py
+	python services/web/process_data/get_distance.py
 	```
 
 2. **Prepare data for ingestion into PostgreSQL:**
 	If `ciucas_runners.json` and `ciucas_route.json` do not exist in the `mock_data` folder, or if the data becomes corrupted, run:
 	```sh
-	python process_data/trim_json.py
+	python services/web/process_data/trim_json.py
 	```
 
 ---
