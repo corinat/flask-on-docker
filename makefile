@@ -16,7 +16,7 @@ exec-web:						## run the docker container in web container
 create-db:						## create database with flask cli
 	docker compose -f docker-compose.prod.yml exec web python manage.py create_db
 seed_users:  					## push data for users table
-	 docker compose -f docker-compose.prod.yml exec web python manage.py seed_db 
+	docker compose -f docker-compose.prod.yml exec web python manage.py seed_db 
 seed-route:						## push data for running route mock data
 	docker compose -f docker-compose.prod.yml exec web python manage.py seed_db_route
 seed-runners:					## push data for runners mock data
