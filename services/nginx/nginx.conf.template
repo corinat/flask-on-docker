@@ -2,13 +2,13 @@ server {
     server_name ${MY_DNS} www.${MY_DNS};
 
     location / {
-	return 301 https://$host:1443$request_uri;
+        return 301 https://$host:${NGINX_PORT}$request_uri;
     }
 
 }
 
 server {
-    listen 1443 ssl;
+    listen ${NGINX_PORT} ssl;
     server_name ${MY_DNS};
 
     ssl_certificate /etc/letsencrypt/live/${MY_DNS}/fullchain.pem;
@@ -43,9 +43,9 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto https;
-        proxy_set_header X-Forwarded-Port 1443;
-        proxy_pass http://web:5000;
-        proxy_redirect http://$host:5000/ https://$host:1443/;
+        proxy_set_header X-Forwarded-Port ${NGINX_PORT};
+        proxy_pass http://web:${WEB_PORT};
+        proxy_redirect http://$host:${WEB_PORT}/ https://$host:${NGINX_PORT}/;
     }
 
 }

@@ -105,7 +105,14 @@ FLASK_APP=project/__init__.py
 FLASK_DEBUG=0
 APP_FOLDER=/home/app/web
 SECRET_KEY="prod-secret-key"
+PGADMIN_DEFAULT_EMAIL="pgadmin4@pgadmin.org"
+PGADMIN_DEFAULT_PASSWORD="admin"
+
+WEB_PORT=5000
+PGADMIN_PORT=5555
+NGINX_PORT=1443
 ```
+> **Note:** Adjust the above environment variable values as needed for your deployment.
 
 ---
 
