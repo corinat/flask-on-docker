@@ -150,13 +150,13 @@ Inside the container, in the root directory, run the following scripts as needed
 
 1. **Generate distance for each runner:**
 	```sh
-	python services/web/process_data/get_distance.py
+	python process_data/get_distance.py
 	```
 
 2. **Prepare data for ingestion into PostgreSQL:**
 	If `ciucas_runners.json` and `ciucas_route.json` do not exist in the `mock_data` folder, or if the data becomes corrupted, run:
 	```sh
-	python services/web/process_data/trim_json.py
+	python process_data/trim_json.py
 	```
 
 ---
