@@ -10,29 +10,41 @@ help:                           ## Display a help message detailing commands and
 ## [Managing containers for prod]
 
 build:							## builds the docker container
+	export $(cat .env.prod | xargs) && 
 	docker compose -f docker-compose.prod.yml up -d --build
 exec-web:						## run the docker container in web container
+	export $(cat .env.prod | xargs) && 
 	docker compose exec web bash
 create-db:						## create database with flask cli
+	export $(cat .env.prod | xargs) && 
 	docker compose -f docker-compose.prod.yml exec web python manage.py create_db
 seed_users:  					## push data for users table
+	export $(cat .env.prod | xargs) && 
 	docker compose -f docker-compose.prod.yml exec web python manage.py seed_db 
 seed-route:						## push data for running route mock data
+	export $(cat .env.prod | xargs) && 
 	docker compose -f docker-compose.prod.yml exec web python manage.py seed_db_route
 seed-runners:					## push data for runners mock data
+	export $(cat .env.prod | xargs) && 
 	docker compose -f docker-compose.prod.yml exec web python manage.py seed_db_runners
 down:							## stop the docker container
+	export $(cat .env.prod | xargs) && 
 	docker compose -f docker-compose.prod.yml down -v 
 restart:						## restart containers
+	export $(cat .env.prod | xargs) && 
 	docker compose -f docker-compose.prod.yml up -d
 force-restart:					## force restart containers
+	export $(cat .env.prod | xargs) && 
 	docker compose -f docker-compose.prod.yml restart
 # --- Print table contents (prod) ---
 print-users:                       ## Print all user data from the production database
+	export $(cat .env.prod | xargs) && 
 	docker compose -f docker-compose.prod.yml exec web python manage.py print_users
 
 print-runners:                  ## Print all runners from the production database
+	export $(cat .env.prod | xargs) && 
 	docker compose -f docker-compose.prod.yml exec web python manage.py print_runners
 
 print-routes:                    ## Print all route points from the production database
+	export $(cat .env.prod | xargs) && 
 	docker compose -f docker-compose.prod.yml exec web python manage.py print_routes
