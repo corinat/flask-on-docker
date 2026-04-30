@@ -103,7 +103,7 @@ def print_users():
     Behavior:
         - Delegates to `UserHelper.print_all_data()` for output formatting.
     """
-    UserHelper.print_all_data()
+    UserHelper.print_all_users()
 
 
 @cli.command("print_runners")

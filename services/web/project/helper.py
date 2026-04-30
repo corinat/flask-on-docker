@@ -15,17 +15,18 @@ class UserHelper:
         print("Successfully added users")
         return users
 
-    def print_all_data():
+    @staticmethod
+    def print_all_users():
         """
-        Function to print user data available in DB
+        Print all user records from the User table.
         """
-        user_list = User.print_all_user()
-        for user in user_list:
+        users = User.query.all()
+        for user in users:
             first_name = getattr(user, "first_name", user.name if hasattr(user, "name") else "")
             last_name = getattr(user, "last_name", "")
             email = user.email
-            print(f"User Name : {first_name} {last_name}, " f"Email : {email}")
-        if len(user_list) == 0:
+            print(f"User Name : {first_name} {last_name}, Email : {email}")
+        if len(users) == 0:
             print("No User Record Found")
 
     @staticmethod
