@@ -21,8 +21,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(255), nullable=False)  # Increase to 255
     
 
-    def __init__(self, id: int, email: str, password: str, name: str):
-        self.id = id
+    def __init__(self, email: str, password: str, name: str):
         self.email = email
         self.name = name
         self.password = password
