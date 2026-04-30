@@ -47,9 +47,6 @@ force-restart: prepare-env ## Force restart running containers
 create-db: prepare-env ## Create database
 	docker compose -f docker-compose.prod.yml exec web python manage.py create_db
 
-seed-users: prepare-env ## Seed users table
-	docker compose -f docker-compose.prod.yml exec web python manage.py seed_db
-
 seed-route: prepare-env ## Seed route data
 	docker compose -f docker-compose.prod.yml exec web python manage.py seed_db_route
 
