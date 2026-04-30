@@ -220,7 +220,7 @@ def delete(id):
 @main.route("/live", strict_slashes=False, methods=["GET"])
 @cross_origin(origins=["https://mapwizard.eu", "https://www.mapwizard.eu"])
 @cross_origin(origins=["http://localhost:8080", "http://127.0.0.1:8080", "https://mapwizard.eu", "https://www.mapwizard.eu"])
-@login_required
+# @login_required
 def live():
     """
     Stream live runner and track data as JSON for the frontend.

@@ -29,10 +29,10 @@ if __name__ == '__main__':
     import sys
 
     # Default file paths
-    default_input_1 = 'services/web/process_data/data/ciucas_route_distance.geojson'
-    default_output_1 = 'services/web/project/mock_data/ciucas_route.json'
-    default_input_2 = 'services/web/process_data/data/runners.geojson'
-    default_output_2 = 'services/web/project/mock_data/ciucas_runners.json'
+    default_input_1 = 'process_data/data/ciucas_route_distance.geojson'
+    default_output_1 = 'project/mock_data/ciucas_route.json'
+    default_input_2 = 'process_data/data/runners.geojson'
+    default_output_2 = 'project/mock_data/ciucas_runners.json'
 
     if len(sys.argv) == 1:
         # No arguments, use defaults for both

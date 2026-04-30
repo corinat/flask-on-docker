@@ -9,8 +9,6 @@ services:
     env_file:
       - .env.dev
       - .env.dev.db
-    environment:
-      PSYCOPG2_DB_URI: "dbname=${POSTGRES_DB} user=${POSTGRES_USER} host=${POSTGRES_HOST} password=${POSTGRES_PASSWORD} port=${POSTGRES_PORT}"
     depends_on:
       - db
     restart: always

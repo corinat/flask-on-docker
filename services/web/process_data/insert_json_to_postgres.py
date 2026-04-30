@@ -9,8 +9,13 @@ class InsertMockDataToPostrges:
         with open(json_file) as json_data:
             record_list = json.load(json_data)
 
-        # Convert JSON data to instances of the SQLAlchemy model
-        records = [model(**record_dict) for record_dict in record_list]
+
+        # Only remove 'id' for User model
+        records = []
+        for record_dict in record_list:
+            if model.__name__ == "User":
+                record_dict.pop('id', None)
+            records.append(model(**record_dict))
 
         # Add instances to the session and commit
         db.session.add_all(records)

@@ -3,22 +3,28 @@ services:
     build:
       context: ./services/web
       dockerfile: Dockerfile.prod
-    command: gunicorn --bind 0.0.0.0:5000 manage:app
+    command: gunicorn --bind 0.0.0.0:${WEB_PORT} manage:app
     volumes:
       - template_volume:/home/app/web/project/templates
     expose:
-      - "5000"
+      - "${WEB_PORT}"
     env_file:
       - ./.env.prod
       - ./.env.prod.db
     environment:
-      PSYCOPG2_DB_URI: "dbname=${POSTGRES_DB} user=${POSTGRES_USER} host=${POSTGRES_HOST} password=${POSTGRES_PASSWORD} port=${POSTGRES_PORT}"
+
+      PSYCOPG2_DB_URI: >
+        dbname=$POSTGRES_DB
+        user=$POSTGRES_USER
+        host=$POSTGRES_HOST
+        password=$POSTGRES_PASSWORD
+        port=$POSTGRES_PORT
     depends_on:
       - db
     networks:
       - flask-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000"]
+      test: ["CMD", "curl", "-f", "http://localhost:${WEB_PORT}"]
       interval: 30s
       retries: 3
   db:
@@ -35,10 +41,10 @@ services:
     depends_on:
       - db
     ports:
-      - "5555:80"
+      - "${PGADMIN_PORT}:80"
     environment:
-      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
-      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     restart: unless-stopped
     links:
       - "db:pgsql-server"
@@ -51,7 +57,11 @@ services:
       - template_volume:/home/app/web/project/templates
       - /etc/letsencrypt:/etc/letsencrypt:ro
     ports:
-      - "1443:1443"  
+      - "${NGINX_PORT}:${NGINX_PORT}"  
+    environment:
+      - NGINX_PORT=${NGINX_PORT}
+      - WEB_PORT=${WEB_PORT}
+      - MY_DNS=${MY_DNS}
     depends_on:
       - web
     networks:

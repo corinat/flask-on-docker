@@ -105,7 +105,14 @@ FLASK_APP=project/__init__.py
 FLASK_DEBUG=0
 APP_FOLDER=/home/app/web
 SECRET_KEY="prod-secret-key"
+PGADMIN_DEFAULT_EMAIL="pgadmin4@pgadmin.org"
+PGADMIN_DEFAULT_PASSWORD="admin"
+
+WEB_PORT=5000
+PGADMIN_PORT=5555
+NGINX_PORT=1443
 ```
+> **Note:** Adjust the above environment variable values as needed for your deployment.
 
 ---
 
@@ -143,13 +150,13 @@ Inside the container, in the root directory, run the following scripts as needed
 
 1. **Generate distance for each runner:**
 	```sh
-	python services/web/process_data/get_distance.py
+	python process_data/get_distance.py
 	```
 
 2. **Prepare data for ingestion into PostgreSQL:**
 	If `ciucas_runners.json` and `ciucas_route.json` do not exist in the `mock_data` folder, or if the data becomes corrupted, run:
 	```sh
-	python services/web/process_data/trim_json.py
+	python process_data/trim_json.py
 	```
 
 ---

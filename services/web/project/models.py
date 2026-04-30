@@ -21,17 +21,12 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(255), nullable=False)  # Increase to 255
     
 
-    def __init__(self, id: int, email: str, password: str, name: str):
-        self.id = id
+    def __init__(self, email: str, password: str, name: str):
         self.email = email
         self.name = name
         self.password = password
-       
-
-    @staticmethod
-    def print_all_user():
-        return User.query.all()
-
+        
+        
 class Runners(db.Model):
     """
     Model for storing runner information and race results.
@@ -50,6 +45,10 @@ class Runners(db.Model):
     age = Column(String(128), nullable=False)
     ranking = Column(Integer, nullable=False)
     time_ = Column(String(128), nullable=True)
+
+    __table_args__ = (
+        db.Index('idx_runners_ranking', 'ranking'),
+    )
 
     def __init__(self, id, imei, name, displayname, gender, categ, club, bib, time_, age, ranking):
         self.id = id
