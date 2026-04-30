@@ -67,8 +67,8 @@ if __name__ == "__main__":
     """
     import sys
 
-    default_input = "services/web/process_data/data/ciucas_gpx.geojson"
-    default_output = "services/web/process_data/data/ciucas_route_distance.geojson"
+    default_input = "process_data/data/ciucas_gpx.geojson"
+    default_output = "process_data/data/ciucas_route_distance.geojson"
 
     if len(sys.argv) == 1:
         add_distance(default_input, default_output)
