@@ -1,3 +1,4 @@
+
 """
 Utilities for retrieving and streaming track and runner data from a PostgreSQL database as GeoJSON.
 Includes classes for direct data access and for streaming/transforming data for live applications.
@@ -7,7 +8,7 @@ import json
 import os
 
 import pandas as pd
-import psycopg2
+from sqlalchemy import create_engine
 
 WORKDIR = os.getenv("APP_FOLDER")
 
@@ -16,28 +17,26 @@ class GetDataFromPostgresql:
     """
     Provides methods to fetch track and runner data from PostgreSQL and return as GeoJSON.
     """
-
     def __init__(self):
         """
         Initialize with a base GeoJSON structure.
         """
         self.geojson_structure = {"type": "FeatureCollection", "name": "ciucasx3", "features": []}
 
+
     @staticmethod
-    def connect_to_postgres():
+    def get_sqlalchemy_engine():
         """
-        Establish a connection to the PostgreSQL database using environment variables.
+        Create a SQLAlchemy engine using environment variables.
         Returns:
-            psycopg2 connection object
+            SQLAlchemy engine
         """
-        return psycopg2.connect(
-            dbname=os.getenv("POSTGRES_DB"),
-            user=os.getenv("POSTGRES_USER"),
-            password=os.getenv("POSTGRES_PASSWORD"),
-            host=os.getenv("POSTGRES_HOST"),
-            port=os.getenv("POSTGRES_PORT"),
-            connect_timeout=3,
-        )
+        dbname = os.getenv("POSTGRES_DB")
+        user = os.getenv("POSTGRES_USER")
+        password = os.getenv("POSTGRES_PASSWORD")
+        host = os.getenv("POSTGRES_HOST")
+        port = os.getenv("POSTGRES_PORT")
+        return create_engine(f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{dbname}")
 
     def get_track_from_postgresql(self):
         """
@@ -45,11 +44,11 @@ class GetDataFromPostgresql:
         Returns:
             str: GeoJSON string of track features
         """
-        conn = self.connect_to_postgres()
+        engine = self.get_sqlalchemy_engine()
         query = """SELECT * FROM ciucas_route"""
 
         # Use pandas to read SQL query results directly into a DataFrame
-        df = pd.read_sql_query(query, conn)
+        df = pd.read_sql_query(query, engine)
 
         track = self.geojson_structure
 
@@ -63,11 +62,11 @@ class GetDataFromPostgresql:
         Returns:
             str: GeoJSON string of runner features
         """
-        conn = self.connect_to_postgres()
+        engine = self.get_sqlalchemy_engine()
         query = """SELECT * FROM runners_ciucas ORDER BY ranking ASC"""
 
         # Use pandas to directly read SQL query results into a DataFrame
-        df = pd.read_sql_query(query, conn)
+        df = pd.read_sql_query(query, engine)
 
         runner = self.geojson_structure
         geometry = {"type": "Point", "coordinates": [0.0, 0.0]}
@@ -84,12 +83,12 @@ class StreamingData:
     """
     Provides methods for streaming track data and updating runner properties for live tracking.
     """
-
     def __init__(self):
         """
         Initialize with an empty list of indexes.
         """
         self.indexes = []
+        
 
     def streem_track_from_postgres(self, track_from_postgresql):
         """
@@ -105,6 +104,7 @@ class StreamingData:
             for index, _ in enumerate(all_points_track):
                 self.indexes.append(index)
                 yield all_points_track
+                
 
     def update_runner_properties(
         self, runner, streem_features_from_ciucas_track, runner_index, track_index, spacing_factor
