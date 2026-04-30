@@ -1,5 +1,5 @@
 prepare-env:
-        cp .env.prod .env
+	cp .env.prod .env
 
 .PHONY: build exec-web create-db seed-route seed_users seed-runners down build-dev down-dev help print-db print-runners print-routes
 
