@@ -9,10 +9,12 @@ class InsertMockDataToPostrges:
         with open(json_file) as json_data:
             record_list = json.load(json_data)
 
-        # Remove 'id' from each record_dict if present
+
+        # Only remove 'id' for User model
         records = []
         for record_dict in record_list:
-            record_dict.pop('id', None)
+            if model.__name__ == "User":
+                record_dict.pop('id', None)
             records.append(model(**record_dict))
 
         # Add instances to the session and commit
