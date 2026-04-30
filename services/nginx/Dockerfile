@@ -9,4 +9,7 @@ COPY ./static/favicon.ico /usr/share/nginx/html/favicon.ico
 RUN apt-get update && apt-get install -y gettext-base
 
 # Entrypoint script to generate nginx.conf from template
-CMD envsubst < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'
+CMD envsubst '$NGINX_PORT $WEB_PORT $MY_DNS' \
+    < /etc/nginx/nginx.conf.template \
+    > /etc/nginx/nginx.conf \
+    && nginx -g 'daemon off;'
