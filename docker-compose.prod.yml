@@ -52,6 +52,10 @@ services:
       - /etc/letsencrypt:/etc/letsencrypt:ro
     ports:
       - "${NGINX_PORT}:${NGINX_PORT}"  
+    environment:
+      - NGINX_PORT=${NGINX_PORT}
+      - WEB_PORT=${WEB_PORT}
+      - MY_DNS=${MY_DNS}
     depends_on:
       - web
     networks:
