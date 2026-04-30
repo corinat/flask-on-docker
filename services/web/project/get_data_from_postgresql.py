@@ -8,6 +8,7 @@ import json
 import os
 
 import pandas as pd
+from project.db_config import get_psycopg2_db_uri
 from sqlalchemy import create_engine
 
 WORKDIR = os.getenv("APP_FOLDER")
@@ -27,16 +28,22 @@ class GetDataFromPostgresql:
     @staticmethod
     def get_sqlalchemy_engine():
         """
-        Create a SQLAlchemy engine using environment variables.
+        Create a SQLAlchemy engine using a helper for the DB URI.
         Returns:
             SQLAlchemy engine
         """
-        dbname = os.getenv("POSTGRES_DB")
-        user = os.getenv("POSTGRES_USER")
-        password = os.getenv("POSTGRES_PASSWORD")
-        host = os.getenv("POSTGRES_HOST")
-        port = os.getenv("POSTGRES_PORT")
-        return create_engine(f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{dbname}")
+        # Parse the psycopg2-style URI into SQLAlchemy URI
+        db_uri = get_psycopg2_db_uri()
+        # Convert "dbname=... user=..." to SQLAlchemy URI
+        # Example: postgresql+psycopg2://user:password@host:port/dbname
+        import re
+        pattern = r"dbname=(\S+) user=(\S+) host=(\S+) password=(\S+) port=(\S+)"
+        match = re.match(pattern, db_uri)
+        if not match:
+            raise ValueError("Invalid DB URI format from get_psycopg2_db_uri")
+        dbname, user, host, password, port = match.groups()
+        sqlalchemy_uri = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{dbname}"
+        return create_engine(sqlalchemy_uri)
 
     def get_track_from_postgresql(self):
         """

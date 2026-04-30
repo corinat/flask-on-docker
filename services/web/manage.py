@@ -53,27 +53,6 @@ def seed_db_users():
     print("Finished ingesting mock_users.json data in table")
 
 
-def get_psycopg2_db_uri():
-    """
-    Retrieves the PostgreSQL database URI from environment variables.
-
-    Returns:
-        str: The database connection URI.
-
-    Raises:
-        RuntimeError: If the `PSYCOPG2_DB_URI` environment variable is not set.
-
-    Notes:
-        - Typically used for configuring direct psycopg2 connections.
-        - Ensure this variable is set in your environment or docker configuration.
-    """
-    db_uri = os.getenv("PSYCOPG2_DB_URI")
-    if not db_uri:
-        raise RuntimeError(
-            "PSYCOPG2_DB_URI environment variable is not set. "
-            "Please set it in your environment or docker-compose file."
-        )
-    return db_uri
 
 
 @cli.command("seed_db_route")
