@@ -61,6 +61,12 @@ classDiagram
         +GET /live() GeoJSON response
     }
 
+    class MapClient {
+        <<external web app>>
+        +polls /live endpoint
+        +renders runners on interactive map
+    }
+
     class DatabaseCLI {
         <<manage.py>>
         +create_db()
@@ -73,8 +79,10 @@ classDiagram
     }
 
     DatabaseCLI ..> MockDataIngestion : loads JSON into PostgreSQL
-    LiveAPIEndpoint ..> PostgresDataReader : reads track and runner data
-    LiveAPIEndpoint ..> LivePositionEngine : calculates runner positions
+    LiveAPIEndpoint ..> PostgresDataReader : fetches track + runner data
+    PostgresDataReader ..> LivePositionEngine : passes track data as input
+    LiveAPIEndpoint ..> LivePositionEngine : triggers position calculation
+    LiveAPIEndpoint ..> MapClient : serves GeoJSON response
 ```
 
 - Raw route and runner data starts as GeoJSON files
