@@ -11,6 +11,8 @@ This module defines the main Blueprint and all route handlers for the web app, i
 
 import json
 import os
+from functools import wraps
+from urllib.parse import urlparse
 
 from flask import Blueprint, Response, flash, redirect, render_template, request, url_for
 from flask_cors import cross_origin
@@ -217,13 +219,102 @@ def delete(id):
     else:
         return "Error deleting #{id}".format(id=id)
 
+
+def _get_cors_origins():
+    """
+    Build the list of trusted CORS origins from environment variables.
+
+    Uses CORS_ORIGINS if set, otherwise constructs a default from MY_DNS
+    (covering both https://<dns> and https://www.<dns>) plus localhost.
+
+    Returns:
+        list[str]: List of allowed origin URLs.
+    """
+    my_dns = os.getenv("MY_DNS", "")
+    nginx_port = os.getenv("NGINX_PORT", "")
+    base_origins = ["http://localhost:8080", "http://127.0.0.1:8080"]
+    if my_dns:
+        base_origins.extend([f"https://{my_dns}", f"https://www.{my_dns}"])
+        if nginx_port:
+            base_origins.extend(
+                [f"https://{my_dns}:{nginx_port}", f"https://www.{my_dns}:{nginx_port}"]
+            )
+
+    configured_origins = os.getenv("CORS_ORIGINS")
+    origins = configured_origins.split(",") if configured_origins else list(base_origins)
+
+    if my_dns and nginx_port:
+        for origin in (f"https://{my_dns}:{nginx_port}", f"https://www.{my_dns}:{nginx_port}"):
+            if origin not in origins:
+                origins.append(origin)
+
+    return [origin.strip() for origin in origins if origin.strip()]
+
+
+def _get_request_origin_candidates():
+    """
+    Derive comparable origin values from the incoming request.
+
+    Returns:
+        set[str]: Candidate origins built from Origin, Referer, and Host.
+    """
+    candidates = set()
+
+    for header_name in ("Origin", "Referer"):
+        header_value = request.headers.get(header_name, "")
+        if not header_value:
+            continue
+        parsed = urlparse(header_value)
+        if parsed.scheme and parsed.netloc:
+            candidates.add(f"{parsed.scheme}://{parsed.netloc}")
+
+    if request.host:
+        candidates.add(f"{request.scheme}://{request.host}")
+
+    return candidates
+
+
+def live_login_required(f):
+    """
+    Conditional login decorator for the /live endpoint.
+    Skips login enforcement when the request originates from a trusted origin
+    (CORS_ORIGINS / MY_DNS / localhost). Enforces login for all other callers.
+    """
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        request_origins = _get_request_origin_candidates()
+        trusted_origins = set(_get_cors_origins())
+
+        if request_origins & trusted_origins:
+            return f(*args, **kwargs)
+
+        if not current_user.is_authenticated:
+            return redirect(url_for("auth.login"))
+
+        return f(*args, **kwargs)
+
+    return decorated
+
+
 @main.route("/live", strict_slashes=False, methods=["GET"])
-@cross_origin(origins=["https://mapwizard.eu", "https://www.mapwizard.eu"])
-@cross_origin(origins=["http://localhost:8080", "http://127.0.0.1:8080", "https://mapwizard.eu", "https://www.mapwizard.eu"])
-# @login_required
+@cross_origin(origins=_get_cors_origins())
+@live_login_required
 def live():
     """
-    Stream live runner and track data as JSON for the frontend.
+    Return a GeoJSON snapshot of all runners positioned along the race route.
+
+    Fetches the full track and all runners from PostgreSQL, then assigns each
+    runner a position on the route using a spacing formula based on their
+    ranking. The resulting GeoJSON FeatureCollection is consumed by the
+    external map front-end to render runners as moving markers.
+
+    Accessible without login when the request originates from a trusted origin
+    (see live_login_required). All other callers must be authenticated.
+
+    Returns:
+        Response: A JSON response containing a GeoJSON FeatureCollection
+        with one Feature per runner, each including updated coordinates,
+        elevation, and distance properties.
     """
     running = True
     possition_on_the_track = streem_data.indexes

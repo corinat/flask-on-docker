@@ -1,3 +1,4 @@
+
 """
 Configuration module for Flask application settings.
 
@@ -6,8 +7,7 @@ Defines the Config class for environment-based and default settings, including d
 
 import os
 
-basedir = os.path.abspath(os.path.dirname(__file__))
-APP_FOLDER = os.getenv("APP_FOLDER", basedir)  # default to current directory
+from project.db_config import get_sqlalchemy_database_uri
 
 
 class Config(object):
@@ -15,17 +15,11 @@ class Config(object):
     Flask configuration class. Loads settings from environment variables or uses defaults.
     Sets up database URI, secret key, and folder paths for static, media, and templates.
     """
-
+    BASEDIR = os.path.abspath(os.path.dirname(__file__))
+    APP_FOLDER = os.getenv("APP_FOLDER", BASEDIR)
     PREFERRED_URL_SCHEME = os.getenv("PREFERRED_URL_SCHEME", "https")
-    DATABASE_URL = os.getenv("DATABASE_URL", None)
     SECRET_KEY = os.getenv("SECRET_KEY", "default-secret-key")
-
-    if DATABASE_URL:
-        if DATABASE_URL.startswith("postgres://"):
-            DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
-        SQLALCHEMY_DATABASE_URI = DATABASE_URL
-    else:
-        SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(basedir, 'data.db')}"  # Default to SQLite
+    SQLALCHEMY_DATABASE_URI = get_sqlalchemy_database_uri()
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

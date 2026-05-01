@@ -5,9 +5,8 @@ Loads environment variables, configures the database engine, session, and base m
 Provides init_db() to initialize all tables.
 """
 
-import os
-
 from dotenv import load_dotenv
+from project.db_config import get_sqlalchemy_database_uri
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -17,17 +16,7 @@ load_dotenv()
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-# Get DATABASE_URI from .env file
-DATABASE_URI = os.getenv("DATABASE_URL")
-
-# Ensure the variable is set, otherwise raise an error
-if not DATABASE_URI:
-    raise ValueError("DATABASE_URL environment variable is not set!")
-
-# Fix old-style PostgreSQL connection URL if needed
-if DATABASE_URI.startswith("postgres://"):
-    DATABASE_URI = DATABASE_URI.replace("postgres://", "postgresql://", 1)
-
+DATABASE_URI = get_sqlalchemy_database_uri()
 engine = create_engine(DATABASE_URI)
 
 db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))

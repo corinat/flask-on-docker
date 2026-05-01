@@ -1,15 +1,15 @@
 import os
 
 from flask.cli import FlaskGroup
-from process_data.insert_json_to_postgres import InsertMockDataToPostrges
+from process_data.ingest_json_to_postgres import IngestMockDataToPostgres
 from project.app_factory import create_app, db
 from project.helper import UserHelper
 from project.models import CiucasRoute, Runners, User
 
 app = create_app()
 cli = FlaskGroup(app)
-insert_json_to_postgres_db = staticmethod(
-    InsertMockDataToPostrges.insert_ciucas_data_in_postgres
+ingest_json_to_postgres_db = staticmethod(
+    IngestMockDataToPostgres.ingest_ciucas_data_in_postgres
 )
 WORKDIR = os.getenv("APP_FOLDER")
 
@@ -49,7 +49,7 @@ def seed_db_users():
 
     # Path to your user dummy data JSON file
     json_path = f"{WORKDIR}/project/mock_data/mock_users.json"
-    InsertMockDataToPostrges.insert_ciucas_data_in_postgres(User, json_path)
+    IngestMockDataToPostgres.ingest_ciucas_data_in_postgres(User, json_path)
     print("Finished ingesting mock_users.json data in table")
 
 
@@ -69,7 +69,7 @@ def seed_db_route():
         - JSON file must exist at the expected path.
     """
     json_path = f"{WORKDIR}/project/mock_data/ciucas_route.json"
-    InsertMockDataToPostrges.insert_ciucas_data_in_postgres(
+    IngestMockDataToPostgres.ingest_ciucas_data_in_postgres(
         CiucasRoute, json_path
     )
     print("Finished ingesting ciucas_route.json in table")
@@ -89,7 +89,7 @@ def seed_db_runners():
         - JSON file must exist at the expected path.
     """
     json_path = f"{WORKDIR}/project/mock_data/ciucas_runners.json"
-    InsertMockDataToPostrges.insert_ciucas_data_in_postgres(
+    IngestMockDataToPostgres.ingest_ciucas_data_in_postgres(
         Runners, json_path
     )
     print("Finished ingesting ciucas_runners.json data in table")
