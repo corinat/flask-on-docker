@@ -35,7 +35,8 @@ At a high level, the project follows this flow:
 ```mermaid
 flowchart LR
     JSON["📄 JSON / GeoJSON\nraw data files"]
-    Dist["📐 get_distance.py\ncalculates haversine distance\nper runner"]
+    Dist["📐 get_distance.py\ncalculates haversine distance\nper route point"]
+    Pace["⏱ add_pace.py - calculates simulated pace"]
     Trim["✂️ trim_json.py\nnormalises both route\n& runner data for ingestion"]
     CLI["DatabaseCLI\nmanage.py"]
     Ingest["MockDataIngestion\ningest_json_to_postgres.py"]
@@ -47,8 +48,9 @@ flowchart LR
     Map["🗺️ MapClient\nexternal web app"]
 
     JSON --> Dist
-    JSON -->|raw route data| Trim
-    Dist -->|runner data enriched\nwith distance field| Trim
+    JSON -->|raw runner data| Trim
+    Dist -->|route enriched\nwith distance field| Pace
+    Pace -->|route enriched\nwith pace & segment_distance| Trim
     Trim -->|both datasets normalised\nand ready for ingestion| CLI
     CLI --> Ingest
     Ingest --> PG
@@ -85,6 +87,7 @@ flowchart LR
 	```sh
 	docker compose -f docker-compose.dev.yml exec web bash
 	python process_data/get_distance.py
+	python process_data/add_pace.py
 	python process_data/trim_json.py
 	```
 5. Seed the development database (including users):
@@ -202,12 +205,17 @@ docker compose -f docker-compose.dev.yml exec web bash
 
 Inside the container, in the root directory, run the following scripts as needed:
 
-1. **Generate distance for each runner:**
+1. **Generate distance for each route point:**
 	```sh
 	python process_data/get_distance.py
 	```
 
-2. **Prepare data for ingestion into PostgreSQL:**
+2. **Calculate pace for each route segment:**
+	```sh
+	python process_data/add_pace.py
+	```
+
+3. **Prepare data for ingestion into PostgreSQL:**
 	If `ciucas_runners.json` and `ciucas_route.json` do not exist in the `mock_data` folder, or if the data becomes corrupted, run:
 	```sh
 	python process_data/trim_json.py
@@ -264,7 +272,7 @@ The core idea is to simulate real-time GPS tracking of runners on a known race r
 
 Two key tables are used:
 
-- **`ciucas_route`** — ordered track points for the full race route, each with GPS coordinates (`xcoord`, `ycoord`), elevation (`ele`), and cumulative distance from the start.
+- **`ciucas_route`** — ordered track points for the full race route, each with GPS coordinates (`xcoord`, `ycoord`), elevation (`ele`), cumulative distance from the start, and simulated per-segment `pace` (min/km).
 - **`runners_ciucas`** — one row per runner with name, category, bib number, ranking, and finish time.
 
 ### Streaming logic (`/live` endpoint)
@@ -304,8 +312,9 @@ This tradeoff keeps the map client usable without forcing end users through auth
 Before the API can serve data, the raw GeoJSON files go through a preprocessing step:
 
 1. **`process_data/get_distance.py`** — reads the raw route GeoJSON and adds a `distance` field to each point using the `haversine` formula.
-2. **`process_data/trim_json.py`** — trims and normalises the runner and route data into the format expected by the database models.
-3. **`manage.py seed_db_*`** — loads the preprocessed JSON files into PostgreSQL via `IngestMockDataToPostgres`.
+2. **`process_data/add_pace.py`** — enriches the route with per-segment `pace` (in min/km) and `segment_distance` fields, simulating runner speed based on a configurable `seconds_per_segment` parameter (default: 15 seconds). **Note:** Pace values are simulated estimates derived from this parameter, not actual runner performance data.
+3. **`process_data/trim_json.py`** — trims and normalises the runner and route data into the format expected by the database models.
+4. **`manage.py seed_db_*`** — loads the preprocessed JSON files into PostgreSQL via `IngestMockDataToPostgres`.
 
 ---
 
