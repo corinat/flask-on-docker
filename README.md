@@ -34,42 +34,47 @@ At a high level, the project follows this flow:
 
 ```mermaid
 classDiagram
-    class IngestMockDataToPostrges {
-        +ingest_ciucas_data_in_postgres(model, json_file) static
+    class MockDataIngestion {
+        <<process_data/ingest_json_to_postgres.py>>
+        +load_and_save(model, json_file) static
     }
 
-    class GetDataFromPostgresql {
+    class PostgresDataReader {
+        <<project/get_data_from_postgresql.py>>
         +geojson_structure : dict
-        +GetDataFromPostgresql()
-        +get_sqlalchemy_engine() static
-        +get_track_from_postgresql()
-        +get_runners_from_postgresql()
+        +PostgresDataReader()
+        +create_db_engine() static
+        +fetch_track() GeoJSON string
+        +fetch_runners() GeoJSON string
     }
 
-    class StreamingData {
-        +indexes : list
-        +StreamingData()
-        +streem_track_from_postgres(track_from_postgresql)
-        +update_runner_properties(runner, streem_features_from_ciucas_track, runner_index, track_index, spacing_factor)
+    class LivePositionEngine {
+        <<project/get_data_from_postgresql.py>>
+        +visited_indexes : list
+        +LivePositionEngine()
+        +stream_track_points(track_data)
+        +place_runner_on_track(runner, track_points, runner_index, tick, spacing)
     }
 
-    class RoutesModule {
-        +live()
+    class LiveAPIEndpoint {
+        <<project/routes.py>>
+        +GET /live() GeoJSON response
     }
 
-    class ManageModule {
+    class DatabaseCLI {
+        <<manage.py>>
         +create_db()
-        +seed_db_users()
-        +seed_db_route()
-        +seed_db_runners()
+        +seed_users()
+        +seed_route()
+        +seed_runners()
         +print_users()
         +print_runners()
         +print_routes()
     }
 
-    ManageModule ..> IngestMockDataToPostrges : uses for seeding
-    RoutesModule ..> GetDataFromPostgresql : fetches route and runner data
-    RoutesModule ..> StreamingData : updates live runner positions
+    DatabaseCLI ..> MockDataIngestion : loads JSON into PostgreSQL
+    LiveAPIEndpoint ..> PostgresDataReader : reads track and runner data
+    LiveAPIEndpoint ..> LivePositionEngine : calculates runner positions
 ```
 
 - Raw route and runner data starts as GeoJSON files
