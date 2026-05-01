@@ -3,9 +3,9 @@ import json
 from project.models import db
 
 
-class InsertMockDataToPostrges:
+class IngestMockDataToPostrges:
     @staticmethod
-    def insert_ciucas_data_in_postgres(model, json_file):
+    def ingest_ciucas_data_in_postgres(model, json_file):
         with open(json_file) as json_data:
             record_list = json.load(json_data)
 
