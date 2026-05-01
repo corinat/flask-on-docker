@@ -101,7 +101,7 @@ flowchart LR
 	```sh
 	docker compose -f docker-compose.dev.yml down --remove-orphans -v
 	```
-7. Open [http://127.0.0.1:8080/register_runners](http://127.0.0.1:8080/register_runners) to see the data table.
+7. Open [http://127.0.0.1:8080/register_runners](http://127.0.0.1:8080/register_runners) to see the data table and performe CRUD operations.
 8. For live data, visit [http://127.0.0.1:8080/live](http://127.0.0.1:8080/live).
 
 ---
@@ -305,7 +305,7 @@ Before the API can serve data, the raw GeoJSON files go through a preprocessing 
 
 1. **`process_data/get_distance.py`** — reads the raw route GeoJSON and adds a `distance` field to each point using the `haversine` formula.
 2. **`process_data/trim_json.py`** — trims and normalises the runner and route data into the format expected by the database models.
-3. **`manage.py seed_db_*`** — loads the preprocessed JSON files into PostgreSQL via `IngestMockDataToPostrges`.
+3. **`manage.py seed_db_*`** — loads the preprocessed JSON files into PostgreSQL via `IngestMockDataToPostgres`.
 
 ---
 

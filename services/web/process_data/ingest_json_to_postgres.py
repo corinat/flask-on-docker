@@ -3,7 +3,7 @@ import json
 from project.models import db
 
 
-class IngestMockDataToPostrges:
+class IngestMockDataToPostgres:
     @staticmethod
     def ingest_ciucas_data_in_postgres(model, json_file):
         with open(json_file) as json_data:
