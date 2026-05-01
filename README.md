@@ -35,6 +35,8 @@ At a high level, the project follows this flow:
 ```mermaid
 flowchart LR
     JSON["📄 JSON / GeoJSON\nraw data files"]
+    Dist["📐 get_distance.py\ncalculates haversine distance\nper route point"]
+    Trim["✂️ trim_json.py\nnormalises runner\n& route data"]
     CLI["DatabaseCLI\nmanage.py"]
     Ingest["MockDataIngestion\ningest_json_to_postgres.py"]
     PG[("🗄️ PostgreSQL")]
@@ -44,7 +46,9 @@ flowchart LR
     API["🔌 /live endpoint\nroutes.py"]
     Map["🗺️ MapClient\nexternal web app"]
 
-    JSON --> CLI
+    JSON --> Dist
+    Dist -->|distance field added\nto each route point| Trim
+    Trim -->|enriched JSON ready\nfor ingestion| CLI
     CLI --> Ingest
     Ingest --> PG
     UI -->|insert / update / delete| PG
