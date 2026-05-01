@@ -33,56 +33,23 @@ These actions are available from the `/register_runners` flow and related forms,
 At a high level, the project follows this flow:
 
 ```mermaid
-classDiagram
-    class MockDataIngestion {
-        <<process_data/ingest_json_to_postgres.py>>
-        +load_and_save(model, json_file) static
-    }
+flowchart LR
+    JSON["📄 JSON / GeoJSON\nraw data files"]
+    CLI["DatabaseCLI\nmanage.py"]
+    Ingest["MockDataIngestion\ningest_json_to_postgres.py"]
+    PG[("🗄️ PostgreSQL")]
+    Reader["PostgresDataReader\nget_data_from_postgresql.py"]
+    Engine["LivePositionEngine\nget_data_from_postgresql.py"]
+    API["🔌 /live endpoint\nroutes.py"]
+    Map["🗺️ MapClient\nexternal web app"]
 
-    class PostgresDataReader {
-        <<project/get_data_from_postgresql.py>>
-        +geojson_structure : dict
-        +PostgresDataReader()
-        +create_db_engine() static
-        +fetch_track() GeoJSON string
-        +fetch_runners() GeoJSON string
-    }
-
-    class LivePositionEngine {
-        <<project/get_data_from_postgresql.py>>
-        +visited_indexes : list
-        +LivePositionEngine()
-        +stream_track_points(track_data)
-        +place_runner_on_track(runner, track_points, runner_index, tick, spacing)
-    }
-
-    class LiveAPIEndpoint {
-        <<project/routes.py>>
-        +GET /live() GeoJSON response
-    }
-
-    class MapClient {
-        <<external web app>>
-        +polls /live endpoint
-        +renders runners on interactive map
-    }
-
-    class DatabaseCLI {
-        <<manage.py>>
-        +create_db()
-        +seed_users()
-        +seed_route()
-        +seed_runners()
-        +print_users()
-        +print_runners()
-        +print_routes()
-    }
-
-    DatabaseCLI ..> MockDataIngestion : loads JSON into PostgreSQL
-    LiveAPIEndpoint ..> PostgresDataReader : fetches track + runner data
-    PostgresDataReader ..> LivePositionEngine : passes track data as input
-    LiveAPIEndpoint ..> LivePositionEngine : triggers position calculation
-    LiveAPIEndpoint ..> MapClient : serves GeoJSON response
+    JSON --> CLI
+    CLI --> Ingest
+    Ingest --> PG
+    PG --> Reader
+    Reader --> Engine
+    Engine --> API
+    API -->|polls & renders| Map
 ```
 
 - Raw route and runner data starts as GeoJSON files
