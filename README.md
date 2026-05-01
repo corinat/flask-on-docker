@@ -32,7 +32,55 @@ These actions are available from the `/register_runners` flow and related forms,
 
 At a high level, the project follows this flow:
 
-`GeoJSON input files` -> `ETL preprocessing` -> `PostgreSQL storage` -> `Flask API and web UI` -> `external map client`
+classDiagram
+    class Config {
+        +str BASEDIR
+        +str APP_FOLDER
+        +str PREFERRED_URL_SCHEME
+        +str SECRET_KEY
+        +str SQLALCHEMY_DATABASE_URI
+        +bool SQLALCHEMY_TRACK_MODIFICATIONS
+        +str STATIC_FOLDER
+        +str MEDIA_FOLDER
+        +str TEMPLATE_FOLDER
+    }
+
+    class IngestMockDataToPostrges {
+        +ingest_ciucas_data_in_postgres(model, json_file) static
+    }
+
+    class GetDataFromPostgresql {
+        +dict geojson_structure
+        +GetDataFromPostgresql()
+        +get_sqlalchemy_engine() static
+        +get_track_from_postgresql()
+        +get_runners_from_postgresql()
+    }
+
+    class StreamingData {
+        +list indexes
+        +StreamingData()
+        +streem_track_from_postgres(track_from_postgresql)
+        +update_runner_properties(runner, streem_features_from_ciucas_track, runner_index, track_index, spacing_factor)
+    }
+
+    class RoutesModule {
+        +live()
+    }
+
+    class ManageModule {
+        +create_db()
+        +seed_db_users()
+        +seed_db_route()
+        +seed_db_runners()
+        +print_users()
+        +print_runners()
+        +print_routes()
+    }
+
+    ManageModule ..> IngestMockDataToPostrges : uses for seeding
+    RoutesModule ..> GetDataFromPostgresql : fetches route and runner data
+    RoutesModule ..> StreamingData : updates live runner positions
 
 - Raw route and runner data starts as GeoJSON files
 - Preprocessing scripts normalize and enrich that data before ingestion
