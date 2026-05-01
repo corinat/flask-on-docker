@@ -8,7 +8,7 @@ import json
 import os
 
 import pandas as pd
-from project.db_config import get_psycopg2_db_uri
+from project.db_config import get_sqlalchemy_database_uri
 from sqlalchemy import create_engine
 
 WORKDIR = os.getenv("APP_FOLDER")
@@ -24,7 +24,6 @@ class GetDataFromPostgresql:
         """
         self.geojson_structure = {"type": "FeatureCollection", "name": "ciucasx3", "features": []}
 
-
     @staticmethod
     def get_sqlalchemy_engine():
         """
@@ -32,18 +31,7 @@ class GetDataFromPostgresql:
         Returns:
             SQLAlchemy engine
         """
-        # Parse the psycopg2-style URI into SQLAlchemy URI
-        db_uri = get_psycopg2_db_uri()
-        # Convert "dbname=... user=..." to SQLAlchemy URI
-        # Example: postgresql+psycopg2://user:password@host:port/dbname
-        import re
-        pattern = r"dbname=(\S+) user=(\S+) host=(\S+) password=(\S+) port=(\S+)"
-        match = re.match(pattern, db_uri)
-        if not match:
-            raise ValueError("Invalid DB URI format from get_psycopg2_db_uri")
-        dbname, user, host, password, port = match.groups()
-        sqlalchemy_uri = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{dbname}"
-        return create_engine(sqlalchemy_uri)
+        return create_engine(get_sqlalchemy_database_uri())
 
     def get_track_from_postgresql(self):
         """
@@ -95,7 +83,6 @@ class StreamingData:
         Initialize with an empty list of indexes.
         """
         self.indexes = []
-        
 
     def streem_track_from_postgres(self, track_from_postgresql):
         """
@@ -111,7 +98,6 @@ class StreamingData:
             for index, _ in enumerate(all_points_track):
                 self.indexes.append(index)
                 yield all_points_track
-                
 
     def update_runner_properties(
         self, runner, streem_features_from_ciucas_track, runner_index, track_index, spacing_factor
