@@ -15,13 +15,13 @@ def trim_json(input_geojson, output_json):
         output_json (str): Path to the output JSON file.
     """
     trim_dictionary = []
-    with open(input_geojson, 'r') as f:
+    with open(input_geojson, 'r', encoding='utf-8') as f:
         data = json.load(f)
         features = data['features']
         print(f"Found {len(features)} features in {input_geojson}")
         for feature in features:
             trim_dictionary.append(feature['properties'])
-    with open(output_json, "w") as jsonFile:
+    with open(output_json, "w", encoding='utf-8') as jsonFile:
         json.dump(trim_dictionary, jsonFile, ensure_ascii=False, indent=4)
     print(f"Wrote {len(trim_dictionary)} items to {output_json}\n")
 
@@ -29,7 +29,7 @@ if __name__ == '__main__':
     import sys
 
     # Default file paths
-    default_input_1 = 'process_data/data/ciucas_route_distance.geojson'
+    default_input_1 = 'process_data/data/ciucas_route_pace.geojson'
     default_output_1 = 'project/mock_data/ciucas_route.json'
     default_input_2 = 'process_data/data/runners.geojson'
     default_output_2 = 'project/mock_data/ciucas_runners.json'

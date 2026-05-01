@@ -10,7 +10,7 @@ prepare-env:
 # ==============================
 
 .PHONY: help build exec-web create-db seed-users seed-route seed-runners down restart force-restart \
-        print-users print-runners print-routes
+        print-users print-runners print-routes preprocess-data
 
 # ==============================
 # Help
@@ -39,6 +39,15 @@ restart: prepare-env ## Restart containers (no rebuild)
 
 force-restart: prepare-env ## Force restart running containers
 	docker compose -f docker-compose.prod.yml restart
+
+# ==============================
+# ETL - Data Preprocessing
+# ==============================
+
+preprocess-data: prepare-env ## Preprocess route and runner data (distance, pace, trim)
+	docker compose -f docker-compose.prod.yml exec web python process_data/get_distance.py
+	docker compose -f docker-compose.prod.yml exec web python process_data/add_pace.py
+	docker compose -f docker-compose.prod.yml exec web python process_data/trim_json.py
 
 # ==============================
 # Database - Setup

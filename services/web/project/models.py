@@ -21,10 +21,10 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(255), nullable=False)  # Increase to 255
     
 
-    def __init__(self, email: str, password: str, name: str):
-        self.email = email
-        self.name = name
-        self.password = password
+    # def __init__(self, email: str, password: str, name: str):
+    #     self.email = email
+    #     self.name = name
+    #     self.password = password
         
         
 class Runners(db.Model):
@@ -50,19 +50,6 @@ class Runners(db.Model):
         db.Index('idx_runners_ranking', 'ranking'),
     )
 
-    def __init__(self, id, imei, name, displayname, gender, categ, club, bib, time_, age, ranking):
-        self.id = id
-        self.imei = imei
-        self.name = name
-        self.displayname = displayname
-        self.gender = gender
-        self.categ = categ
-        self.club = club
-        self.bib = bib
-        self.time_ = time_
-        self.age = age
-        self.ranking = ranking
-
 
 class CiucasRoute(db.Model):
     """
@@ -75,9 +62,14 @@ class CiucasRoute(db.Model):
     ele = Column(Integer, nullable=False)
     xcoord = Column(Float(), nullable=False)
     ycoord = Column(Float(), nullable=False)
+    pace = Column(Float(), nullable=True)
+    segment_distance = Column(Float(), nullable=True)
 
-    def __init__(self, distance: float, ycoord: float, ele: float, xcoord: float):
-        self.distance = distance
-        self.ele = ele
-        self.xcoord = xcoord
-        self.ycoord = ycoord
+    # def __init__(self, distance: float, ycoord: float, ele: float, xcoord: float,
+    #     pace: float = None, segment_distance: float = None):
+    #     self.distance = distance
+    #     self.ele = ele
+    #     self.xcoord = xcoord
+    #     self.ycoord = ycoord
+    #     self.pace = pace
+    #     self.segment_distance = segment_distance
