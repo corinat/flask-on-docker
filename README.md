@@ -180,7 +180,69 @@ There are several ways to view and understand the real-time data provided by thi
 
 ---
 
-## 📝 Project Summary
+## � Libraries Used
+
+| Library | Purpose |
+|---|---|
+| **Flask** | Core web framework. Handles routing, blueprints, and the application factory pattern. |
+| **Flask-SQLAlchemy** | ORM integration. Maps Python model classes (`Runners`, `CiucasRoute`, `User`) to PostgreSQL tables. |
+| **Flask-Migrate** | Database migration management via Alembic. Tracks schema changes over time. |
+| **Flask-Login** | Session-based user authentication. Protects routes with `@login_required` and manages current user state. |
+| **Flask-CORS** | Cross-Origin Resource Sharing. Allows the external map front-end at `mapwizard.eu` to call the `/live` endpoint from a different origin. |
+| **SQLAlchemy** | Low-level SQL toolkit. Used directly (without the Flask layer) for the streaming data path that reads from PostgreSQL via `pandas`. |
+| **psycopg2-binary** | PostgreSQL driver. Used by both SQLAlchemy and the direct `psycopg2`-style connection string for raw DB access. |
+| **pandas** | Data manipulation. Reads SQL query results directly into a `DataFrame` (`pd.read_sql_query`), which is then converted to GeoJSON-compatible dicts. |
+| **Gunicorn** | Production WSGI server. Runs the Flask app inside the container, bound to the port exposed to Nginx. |
+| **Werkzeug** | WSGI utilities. `ProxyFix` middleware corrects `X-Forwarded-*` headers so Flask generates correct redirect URLs behind Nginx. |
+| **WTForms** | Form definitions and validation. Powers the runner search, new runner, and edit/delete forms. |
+| **Flask-Babel** | Internationalisation support. Included for potential future locale/date formatting needs. |
+| **haversine** | Geospatial distance calculation. Computes the great-circle distance between GPS coordinates to derive each runner's distance along the track. |
+| **python-dotenv** | Loads `.env` files into the process environment at startup, keeping secrets out of source code. |
+| **Jinja2** | Templating engine (bundled with Flask). Renders HTML views for the runner table, login, and profile pages. |
+
+---
+
+## 🧠 How the API Logic Works
+
+The core idea is to simulate real-time GPS tracking of runners on a known race route, driven entirely by data stored in PostgreSQL.
+
+### Data model
+
+Two key tables are used:
+
+- **`ciucas_route`** — ordered track points for the full race route, each with GPS coordinates (`xcoord`, `ycoord`), elevation (`ele`), and cumulative distance from the start.
+- **`runners_ciucas`** — one row per runner with name, category, bib number, ranking, and finish time.
+
+### Streaming logic (`/live` endpoint)
+
+The `/live` endpoint generates a GeoJSON `FeatureCollection` of all runners, each placed at a position on the route. The position is calculated using a spacing formula:
+
+```
+runner_position = (spacing_factor × runner_index + track_index) % total_track_points
+```
+
+This spreads runners evenly across the track, with faster runners (lower rank) placed further along the route. The result is a snapshot of where each runner "would be" at this moment in the race.
+
+Each call to `/live`:
+1. Fetches all track points from `ciucas_route` via `pandas` + `SQLAlchemy`.
+2. Fetches all runners from `runners_ciucas`, sorted by ranking.
+3. Assigns each runner a position on the track based on the spacing formula.
+4. Copies the track point's coordinates and elevation into the runner's GeoJSON properties.
+5. Returns the full GeoJSON as a single JSON response.
+
+The external map app at [mapwizard.eu](https://mapwizard.eu/projects/realtime-ultra/index.html) polls this endpoint and renders each runner as a moving marker on the map.
+
+### ETL pipeline
+
+Before the API can serve data, the raw GeoJSON files go through a preprocessing step:
+
+1. **`process_data/get_distance.py`** — reads the raw route GeoJSON and adds a `distance` field to each point using the `haversine` formula.
+2. **`process_data/trim_json.py`** — trims and normalises the runner and route data into the format expected by the database models.
+3. **`manage.py seed_db_*`** — loads the preprocessed JSON files into PostgreSQL via `IngestMockDataToPostrges`.
+
+---
+
+## �📝 Project Summary
 
 This repository demonstrates a full-stack workflow for real-time geospatial data streaming and visualization:
 - Data is preprocessed and loaded into PostgreSQL.
