@@ -6,9 +6,8 @@ from project.models import db
 class IngestMockDataToPostgres:
     @staticmethod
     def ingest_ciucas_data_in_postgres(model, json_file):
-        with open(json_file) as json_data:
+        with open(json_file, encoding="utf-8") as json_data:
             record_list = json.load(json_data)
-
 
         # Only remove 'id' for User model
         records = []
