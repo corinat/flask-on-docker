@@ -93,6 +93,7 @@ At a high level, the project follows this flow:
 	make seed-runners
 	```
 	> **Note:** Do not run any user seeding command in production. Only use `seed_db_users` in development.
+	> **Deployment note:** Production-facing values such as ports and the public DNS name are read from `.env.prod`, so they can be changed without modifying the application code.
 
 ---
 
@@ -268,6 +269,8 @@ The `/live` endpoint uses conditional access control rather than being either fu
 - Login is required for all other callers, including direct or untrusted origins.
 
 This is implemented with the `live_login_required` decorator in `routes.py`, which compares the incoming request origin against the trusted origins derived from `CORS_ORIGINS`, `MY_DNS`, and `NGINX_PORT`.
+
+Because the trusted DNS name and exposed ports are passed through `.env.prod`, the production deployment stays easy to reconfigure. If the domain or port mapping changes, you can update the environment file instead of changing the application logic.
 
 This tradeoff keeps the map client usable without forcing end users through authentication, while still reducing casual scraping and unintended access from unrelated origins. If stricter protection is needed later, API keys or rate limiting would be the next logical step.
 
