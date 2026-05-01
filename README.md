@@ -10,8 +10,35 @@ A **Flask-based API** for streaming **mock real-time geospatial data** of runner
 
 - Simulates real-time GPS tracking of runners
 - Processes and streams geospatial data
+- Includes full runner management from the web UI: create, edit, and delete
 - Built with Flask, served with Gunicorn + Nginx
 - Dockerized for easy production deployment
+
+---
+
+## ✍️ Runner Data Management
+
+The web app is not just a read-only viewer. It also supports basic CRUD operations for runner data:
+
+- Create new runner entries
+- Edit existing runner details
+- Delete runner entries
+
+These actions are available from the `/register_runners` flow and related forms, making it possible to maintain runner data directly from the UI.
+
+---
+
+## 🏗️ Architecture Overview
+
+At a high level, the project follows this flow:
+
+`GeoJSON input files` -> `ETL preprocessing` -> `PostgreSQL storage` -> `Flask API and web UI` -> `external map client`
+
+- Raw route and runner data starts as GeoJSON files
+- Preprocessing scripts normalize and enrich that data before ingestion
+- PostgreSQL stores both route points and runner records
+- Flask exposes the data through the `/live` API and the runner management UI
+- An external map client consumes the `/live` endpoint for simulated real-time visualization
 
 ---
 
@@ -44,11 +71,12 @@ A **Flask-based API** for streaming **mock real-time geospatial data** of runner
 	```
 	> **Note:** The seed_db_users command is intended for development only. Do not use it in production as it inserts mock/test users.
 
+
 6. **To fully reset and clean up your development environment, run:**
 	```sh
 	docker compose -f docker-compose.dev.yml down --remove-orphans -v
 	```
-7. Open [http://127.0.0.1:8080/register_runners](http://127.0.0.1:8080/	register_runners) to see the data table.
+7. Open [http://127.0.0.1:8080/register_runners](http://127.0.0.1:8080/register_runners) to see the data table.
 8. For live data, visit [http://127.0.0.1:8080/live](http://127.0.0.1:8080/live).
 
 ---
@@ -64,7 +92,7 @@ A **Flask-based API** for streaming **mock real-time geospatial data** of runner
 	make seed-route
 	make seed-runners
 	```
-	> **Note:** Do not run any user seeding command in production. Only use seed_db_users in development.
+	> **Note:** Do not run any user seeding command in production. Only use `seed_db_users` in development.
 
 ---
 
@@ -167,12 +195,12 @@ There are several ways to view and understand the real-time data provided by thi
 
 1. **Web App Views:**
 	- Visit [http://127.0.0.1:8080/live](http://127.0.0.1:8080/live) to see the raw JSON data as it is streamed from PostgreSQL. This endpoint simulates real-time updates of runner locations and stats.
-	- Go to [http://127.0.0.1:8080/register_runners](http://127.0.0.1:8080/register_runners) to see a user-friendly table displaying the runners as they are pulled from the database. This page is useful for quickly verifying the data in a readable format.
+	- Go to [http://127.0.0.1:8080/register_runners](http://127.0.0.1:8080/register_runners) to see a user-friendly table displaying the runners as they are pulled from the database. This page is useful for quickly verifying the data in a readable format and for managing runner entries through clearly exposed create, edit, and delete actions.
 
 2. **Database Visualization with pgAdmin:**
 	- You can visually inspect and manage your PostgreSQL database using the pgAdmin web UI. Once your containers are running, open [http://localhost:5555](http://localhost:5555) in your browser. Log in with:
-		- **Email:** admin@admin.com
-		- **Password:** admin
+		- **Email:** the value configured in `.env.dev` or `.env.prod`
+		- **Password:** the value configured in `.env.dev` or `.env.prod`
 	- pgAdmin allows you to browse tables, run SQL queries, and view your data directly, making it easy to compare the web app’s output with the underlying database contents during development.
 
 3. **Interactive Map Visualization:**
@@ -180,7 +208,7 @@ There are several ways to view and understand the real-time data provided by thi
 
 ---
 
-## � Libraries Used
+## 📚 Libraries Used
 
 | Library | Purpose |
 |---|---|
@@ -215,13 +243,13 @@ Two key tables are used:
 
 ### Streaming logic (`/live` endpoint)
 
-The `/live` endpoint generates a GeoJSON `FeatureCollection` of all runners, each placed at a position on the route. The position is calculated using a spacing formula:
+The `/live` endpoint returns a GeoJSON `FeatureCollection` of all runners, with each runner placed at a calculated position on the route. The position is determined using a spacing formula:
 
 ```
 runner_position = (spacing_factor × runner_index + track_index) % total_track_points
 ```
 
-This spreads runners evenly across the track, with faster runners (lower rank) placed further along the route. The result is a snapshot of where each runner "would be" at this moment in the race.
+This spreads runners across the track, with faster runners (lower rank) positioned further along the route. The result is a simulated snapshot of where each runner would be at that moment in the race.
 
 Each call to `/live`:
 1. Fetches all track points from `ciucas_route` via `pandas` + `SQLAlchemy`.
@@ -231,6 +259,17 @@ Each call to `/live`:
 5. Returns the full GeoJSON as a single JSON response.
 
 The external map app at [mapwizard.eu](https://mapwizard.eu/projects/realtime-ultra/index.html) polls this endpoint and renders each runner as a moving marker on the map.
+
+#### Access control for `/live`
+
+The `/live` endpoint uses conditional access control rather than being either fully public or fully login-protected.
+
+- Public access is allowed when the request comes from a trusted frontend, such as the configured mapwizard domain or localhost during development.
+- Login is required for all other callers, including direct or untrusted origins.
+
+This is implemented with the `live_login_required` decorator in `routes.py`, which compares the incoming request origin against the trusted origins derived from `CORS_ORIGINS`, `MY_DNS`, and `NGINX_PORT`.
+
+This tradeoff keeps the map client usable without forcing end users through authentication, while still reducing casual scraping and unintended access from unrelated origins. If stricter protection is needed later, API keys or rate limiting would be the next logical step.
 
 ### ETL pipeline
 
@@ -242,11 +281,25 @@ Before the API can serve data, the raw GeoJSON files go through a preprocessing 
 
 ---
 
-## �📝 Project Summary
+## 📝 Project Summary
 
-This repository demonstrates a full-stack workflow for real-time geospatial data streaming and visualization:
-- Data is preprocessed and loaded into PostgreSQL.
-- The Flask API streams this data in real time via the `/live` endpoint.
-- You can inspect the data directly (raw JSON), in a table view (`/register_runners`), or on a live map (external web app).
+This project is a Dockerized Flask + PostgreSQL application that simulates real-time ultramarathon tracking from GeoJSON data.
 
-This setup is ideal for showcasing ETL, API, and real-time data visualization skills in a modern, containerized environment.
+It has two main responsibilities:
+- Serve a `/live` GeoJSON API consumed by an external map client
+- Provide a web UI to view, create, edit, and delete runner records
+
+The data is preprocessed through a small ETL flow, loaded into PostgreSQL, and then exposed through both a live tracking endpoint and an admin-style runner management interface.
+
+This repository showcases backend API design, data ingestion, CRUD workflows, geospatial data handling, and containerized deployment with Nginx and Gunicorn.
+
+---
+
+## 🎯 Skills Demonstrated
+
+- Flask backend development and route design
+- PostgreSQL data modeling and persistence
+- CRUD workflow implementation for runner management
+- ETL preprocessing for GeoJSON-based input data
+- Geospatial data handling and live-style API output generation
+- Containerized development and deployment with Docker, Gunicorn, and Nginx
