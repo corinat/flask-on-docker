@@ -217,9 +217,18 @@ def delete(id):
     else:
         return "Error deleting #{id}".format(id=id)
 
+
+def _get_cors_origins():
+    my_dns = os.getenv("MY_DNS", "")
+    if my_dns:
+        cors_default = f"http://localhost:8080,http://127.0.0.1:8080,https://{my_dns},https://www.{my_dns}"
+    else:
+        cors_default = "http://localhost:8080,http://127.0.0.1:8080"
+    return [o.strip() for o in os.getenv("CORS_ORIGINS", cors_default).split(",")]
+
+
 @main.route("/live", strict_slashes=False, methods=["GET"])
-@cross_origin(origins=["https://mapwizard.eu", "https://www.mapwizard.eu"])
-@cross_origin(origins=["http://localhost:8080", "http://127.0.0.1:8080", "https://mapwizard.eu", "https://www.mapwizard.eu"])
+@cross_origin(origins=_get_cors_origins())
 # @login_required
 def live():
     """
