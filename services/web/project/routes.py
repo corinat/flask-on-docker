@@ -12,6 +12,7 @@ This module defines the main Blueprint and all route handlers for the web app, i
 import json
 import os
 from functools import wraps
+from urllib.parse import urlparse
 
 from flask import Blueprint, Response, flash, redirect, render_template, request, url_for
 from flask_cors import cross_origin
@@ -230,11 +231,47 @@ def _get_cors_origins():
         list[str]: List of allowed origin URLs.
     """
     my_dns = os.getenv("MY_DNS", "")
+    nginx_port = os.getenv("NGINX_PORT", "")
+    base_origins = ["http://localhost:8080", "http://127.0.0.1:8080"]
     if my_dns:
-        cors_default = f"http://localhost:8080,http://127.0.0.1:8080,https://{my_dns},https://www.{my_dns}"
-    else:
-        cors_default = "http://localhost:8080,http://127.0.0.1:8080"
-    return [o.strip() for o in os.getenv("CORS_ORIGINS", cors_default).split(",")]
+        base_origins.extend([f"https://{my_dns}", f"https://www.{my_dns}"])
+        if nginx_port:
+            base_origins.extend(
+                [f"https://{my_dns}:{nginx_port}", f"https://www.{my_dns}:{nginx_port}"]
+            )
+
+    configured_origins = os.getenv("CORS_ORIGINS")
+    origins = configured_origins.split(",") if configured_origins else list(base_origins)
+
+    if my_dns and nginx_port:
+        for origin in (f"https://{my_dns}:{nginx_port}", f"https://www.{my_dns}:{nginx_port}"):
+            if origin not in origins:
+                origins.append(origin)
+
+    return [origin.strip() for origin in origins if origin.strip()]
+
+
+def _get_request_origin_candidates():
+    """
+    Derive comparable origin values from the incoming request.
+
+    Returns:
+        set[str]: Candidate origins built from Origin, Referer, and Host.
+    """
+    candidates = set()
+
+    for header_name in ("Origin", "Referer"):
+        header_value = request.headers.get(header_name, "")
+        if not header_value:
+            continue
+        parsed = urlparse(header_value)
+        if parsed.scheme and parsed.netloc:
+            candidates.add(f"{parsed.scheme}://{parsed.netloc}")
+
+    if request.host:
+        candidates.add(f"{request.scheme}://{request.host}")
+
+    return candidates
 
 
 def live_login_required(f):
@@ -245,13 +282,17 @@ def live_login_required(f):
     """
     @wraps(f)
     def decorated(*args, **kwargs):
-        origin = request.headers.get("Origin", "") or request.headers.get("Referer", "")
-        trusted = _get_cors_origins()
-        if origin and any(origin.startswith(o) for o in trusted):
+        request_origins = _get_request_origin_candidates()
+        trusted_origins = set(_get_cors_origins())
+
+        if request_origins & trusted_origins:
             return f(*args, **kwargs)
+
         if not current_user.is_authenticated:
             return redirect(url_for("auth.login"))
+
         return f(*args, **kwargs)
+
     return decorated
 
 
