@@ -38,6 +38,7 @@ flowchart LR
     CLI["DatabaseCLI\nmanage.py"]
     Ingest["MockDataIngestion\ningest_json_to_postgres.py"]
     PG[("🗄️ PostgreSQL")]
+    UI["🖥️ Web UI\n/register_runners"]
     Reader["PostgresDataReader\nget_data_from_postgresql.py"]
     Engine["LivePositionEngine\nget_data_from_postgresql.py"]
     API["🔌 /live endpoint\nroutes.py"]
@@ -46,6 +47,7 @@ flowchart LR
     JSON --> CLI
     CLI --> Ingest
     Ingest --> PG
+    UI -->|insert / update / delete| PG
     PG --> Reader
     Reader --> Engine
     Engine --> API
