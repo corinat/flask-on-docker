@@ -11,6 +11,7 @@ This module defines the main Blueprint and all route handlers for the web app, i
 
 import json
 import os
+from functools import wraps
 
 from flask import Blueprint, Response, flash, redirect, render_template, request, url_for
 from flask_cors import cross_origin
@@ -219,6 +220,15 @@ def delete(id):
 
 
 def _get_cors_origins():
+    """
+    Build the list of trusted CORS origins from environment variables.
+
+    Uses CORS_ORIGINS if set, otherwise constructs a default from MY_DNS
+    (covering both https://<dns> and https://www.<dns>) plus localhost.
+
+    Returns:
+        list[str]: List of allowed origin URLs.
+    """
     my_dns = os.getenv("MY_DNS", "")
     if my_dns:
         cors_default = f"http://localhost:8080,http://127.0.0.1:8080,https://{my_dns},https://www.{my_dns}"
@@ -227,12 +237,43 @@ def _get_cors_origins():
     return [o.strip() for o in os.getenv("CORS_ORIGINS", cors_default).split(",")]
 
 
+def live_login_required(f):
+    """
+    Conditional login decorator for the /live endpoint.
+    Skips login enforcement when the request originates from a trusted origin
+    (CORS_ORIGINS / MY_DNS / localhost). Enforces login for all other callers.
+    """
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        origin = request.headers.get("Origin", "") or request.headers.get("Referer", "")
+        trusted = _get_cors_origins()
+        if origin and any(origin.startswith(o) for o in trusted):
+            return f(*args, **kwargs)
+        if not current_user.is_authenticated:
+            return redirect(url_for("auth.login"))
+        return f(*args, **kwargs)
+    return decorated
+
+
 @main.route("/live", strict_slashes=False, methods=["GET"])
 @cross_origin(origins=_get_cors_origins())
-# @login_required
+@live_login_required
 def live():
     """
-    Stream live runner and track data as JSON for the frontend.
+    Return a GeoJSON snapshot of all runners positioned along the race route.
+
+    Fetches the full track and all runners from PostgreSQL, then assigns each
+    runner a position on the route using a spacing formula based on their
+    ranking. The resulting GeoJSON FeatureCollection is consumed by the
+    external map front-end to render runners as moving markers.
+
+    Accessible without login when the request originates from a trusted origin
+    (see live_login_required). All other callers must be authenticated.
+
+    Returns:
+        Response: A JSON response containing a GeoJSON FeatureCollection
+        with one Feature per runner, each including updated coordinates,
+        elevation, and distance properties.
     """
     running = True
     possition_on_the_track = streem_data.indexes
