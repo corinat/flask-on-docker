@@ -20,18 +20,17 @@ class GetDataFromPostgresql:
     """
     def __init__(self):
         """
-        Initialize with a base GeoJSON structure.
+        Initialize with a reusable SQLAlchemy engine.
         """
-        self.geojson_structure = {"type": "FeatureCollection", "name": "ciucasx3", "features": []}
+        self._engine = create_engine(get_sqlalchemy_database_uri())
 
-    @staticmethod
-    def get_sqlalchemy_engine():
+    def get_sqlalchemy_engine(self):
         """
-        Create a SQLAlchemy engine using a helper for the DB URI.
+        Return the shared SQLAlchemy engine.
         Returns:
             SQLAlchemy engine
         """
-        return create_engine(get_sqlalchemy_database_uri())
+        return self._engine
 
     def get_track_from_postgresql(self):
         """
@@ -45,7 +44,7 @@ class GetDataFromPostgresql:
         # Use pandas to read SQL query results directly into a DataFrame
         df = pd.read_sql_query(query, engine)
 
-        track = self.geojson_structure
+        track = {"type": "FeatureCollection", "name": "ciucasx3", "features": []}
 
         # Convert the DataFrame to a list of dictionaries and append it to the 'features' list
         track["features"] = [{"type": "Feature", "properties": row} for row in df.to_dict("records")]
@@ -63,12 +62,13 @@ class GetDataFromPostgresql:
         # Use pandas to directly read SQL query results into a DataFrame
         df = pd.read_sql_query(query, engine)
 
-        runner = self.geojson_structure
-        geometry = {"type": "Point", "coordinates": [0.0, 0.0]}
+        runner = {"type": "FeatureCollection", "name": "ciucasx3", "features": []}
 
         # Convert the DataFrame to a list of dictionaries and append it to the 'features' list
+        # Each feature gets its own geometry dict to avoid shared-reference mutation
         runner["features"] = [
-            {"type": "Feature", "properties": row, "geometry": geometry} for row in df.to_dict("records")
+            {"type": "Feature", "properties": row, "geometry": {"type": "Point", "coordinates": [0.0, 0.0]}}
+            for row in df.to_dict("records")
         ]
 
         return json.dumps(runner, indent=2, default=str, sort_keys=True)
@@ -80,24 +80,9 @@ class StreamingData:
     """
     def __init__(self):
         """
-        Initialize with an empty list of indexes.
+        Initialize with a counter tracking the current position along the route.
         """
-        self.indexes = []
-
-    def streem_track_from_postgres(self, track_from_postgresql):
-        """
-        Generator that yields all track points one by one, updating indexes.
-        Args:
-            track_from_postgresql (str): GeoJSON string of track data
-        Yields:
-            list: List of all track points (features)
-        """
-        while track_from_postgresql:
-            track = json.loads(track_from_postgresql)
-            all_points_track = track["features"]
-            for index, _ in enumerate(all_points_track):
-                self.indexes.append(index)
-                yield all_points_track
+        self.track_index = 0
 
     def update_runner_properties(
         self, runner, streem_features_from_ciucas_track, runner_index, track_index, spacing_factor

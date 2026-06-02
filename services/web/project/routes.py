@@ -316,26 +316,21 @@ def live():
         with one Feature per runner, each including updated coordinates,
         elevation, and distance properties.
     """
-    running = True
-    possition_on_the_track = streem_data.indexes
     spacing_factor = 50  # Adjust the spacing factor as needed
     get_track = get_data.get_track_from_postgresql()
-    
-    while running:
-        streem_ciucas_track = streem_data.streem_track_from_postgres(get_track)
-        streem_features_from_ciucas_track = next(streem_ciucas_track)
-        stream_runners_from_postgres = get_data.get_runners_from_postgresql()
-        runner = json.loads(stream_runners_from_postgres)
-        ciucas_runner = runner["features"]
+    track_points = json.loads(get_track)["features"]
 
-        sorted_ciucas_runner = sorted(ciucas_runner, key=lambda k: k["properties"]["ranking"], reverse=True)
+    stream_runners_from_postgres = get_data.get_runners_from_postgresql()
+    runner = json.loads(stream_runners_from_postgres)
+    ciucas_runner = runner["features"]
 
-        sorted_ciucas_runner = [
-            streem_data.update_runner_properties(
-                runner, streem_features_from_ciucas_track, runner_index, track_index, spacing_factor
-            )
-            for runner_index, runner in enumerate(sorted_ciucas_runner)
-            for track_index, _ in enumerate(possition_on_the_track)
-        ]
+    sorted_ciucas_runner = sorted(ciucas_runner, key=lambda k: k["properties"]["ranking"], reverse=True)
 
-        return Response(json.dumps(runner), mimetype="application/json")
+    track_index = streem_data.track_index
+    streem_data.track_index = (streem_data.track_index + 1) % len(track_points)
+
+    for runner_index, r in enumerate(sorted_ciucas_runner):
+        streem_data.update_runner_properties(r, track_points, runner_index, track_index, spacing_factor)
+
+    runner["features"] = sorted_ciucas_runner
+    return Response(json.dumps(runner), mimetype="application/json")
